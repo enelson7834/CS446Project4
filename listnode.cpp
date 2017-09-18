@@ -1,7 +1,4 @@
-#include <iostream>
 #include "listnode.h"
-using namespace std;
-
 
 Node::Node( int value, Node* nxt )
 {

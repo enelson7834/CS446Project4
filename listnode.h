@@ -1,47 +1,52 @@
 #include <iostream>
+#include "Node.h"
+
 using namespace std;
 
-class ListNode;
+template <class T>
+class Node 
+{
+    private:
+        Node(T, Node*);
+        
+        T data;
+        Node *next;
 
-class Node {
-private:
-    Node(int, Node*);
-    int data;
-    Node *next;
-
-    friend class ListNode;
-    friend ostream& operator << (ostream&, const ListNode&);
+        friend class ListNode<T>;
+        friend ostream& operator << (ostream&, const ListNode<T>&);
 };
 
-class ListNode {
-public:
-    ListNode(int=10);
-    ListNode(const ListNode&);
-    ~ListNode();
+template <class T>
+class ListNode 
+{
+    public:
+        ListNode(int=10);
+        ListNode(const ListNode&);
+        ~ListNode();
 
-    bool insertAfter(int);
-    bool insertBefore(int);
-    bool get(int&) const;
-    bool remove(int&);
+        bool insertAfter(int);
+        bool insertBefore(int);
+        bool get(int&) const;
+        bool remove(int&);
 
-    void clear();
+        void clear();
 
-    bool goToBeginning();
-    bool goToEnd();
+        bool goToBeginning();
+        bool goToEnd();
 
-    bool goToNext();
-    bool goToPrior();
+        bool goToNext();
+        bool goToPrior();
 
-    bool isEmpty() const;
-    bool isFull() const;
+        bool isEmpty() const;
+        bool isFull() const;
 
-    ListNode& operator = (const ListNode&);
+        ListNode& operator = (const ListNode&);
 
-    friend ostream& operator << (ostream&, const ListNode&);
+        friend ostream& operator << (ostream&, const ListNode&);
 
-private:
-    Node *head;
-    Node *cursor;
+    private:
+        Node<T> *head;
+        Node<T> *cursor;
 };
 
 
