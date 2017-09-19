@@ -2,7 +2,7 @@
 
 ConfigFileInput::ConfigFileInput( char* fileName )
 {
-    if( strpbrk( fileName, ".conf" ) == NULL )
+    if( strstr( fileName, ".conf" ) == NULL )
     {
         cout << "Error in configuration file path. Incorrect extention." 
              << endl;
@@ -31,7 +31,6 @@ ConfigFileInput::ConfigFileInput( char* fileName )
         char tempLine[ STR_MAX_LENGTH ];
         fin.getline( tempLine, STR_MAX_LENGTH, '\n' );
         do {
-            cout << tempLine << endl;
             if( !ParseLine( tempLine ) )
             {
                 fileStatus = 0;
@@ -87,7 +86,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         }
         tempFileName[ position ] = '\0';
 
-        if( strpbrk( lineToParse, ".mdf" ) == NULL )
+        if( strstr( lineToParse, ".mdf" ) == NULL )
         {
             cout << "Error in test file path. Incorrect extention." << endl;
             return false;
@@ -113,6 +112,8 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         }
         else
         {
+            cout << "Error in log specification. No valid specification given."
+                 << endl;
             aLogOutputSpecification = 'E';
             return false;
         }
@@ -131,7 +132,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         }
         tempFileName[ position ] = '\0';
 
-        if( strpbrk( lineToParse, ".out" ) == NULL )
+        if( strstr( lineToParse, ".out" ) == NULL )
         {
             cout << "Error in log file path. Incorrect extention." << endl;
             return false;
@@ -142,10 +143,6 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         return true;
     }
     else if( strncmp( lineToParse, "End Sim", 7 ) == 0 )
-    {
-        return true;
-    }
-    else if( strcmp( lineToParse, "\n" ) == 0 )
     {
         return true;
     }
@@ -176,7 +173,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
 
         tempProcessName[ strlen( tempProcessName ) - 1 ] = '\0';
         tempProcessName[ 0 ] = tolower( tempProcessName[ 0 ] );
-
+        
         ConfigFileInputNode tempNode( tempProcessName, tempProcessValue );
 
         aListOfProcesses.InsertEntry( 0, tempNode );
