@@ -17,12 +17,18 @@ the config file to retrieve necessary information.
 #define namespace_config_file_input_node_hh
 
 /////////////////////////////////////////////////////////////////////////////
+// Definitions
+/////////////////////////////////////////////////////////////////////////////
+
+#define STR_MAX_LENGTH 300
+
+/////////////////////////////////////////////////////////////////////////////
 // Header Files
 /////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <cstring>
 
 /////////////////////////////////////////////////////////////////////////////
 // Class Definitions
@@ -32,31 +38,22 @@ class ConfigFileInputNode
 {
 	public:
 	            ConfigFileInputNode( );
-	            ConfigFileInputNode(    const string newProcessName, 
-	                                    const int newProcessTime );
+	            ConfigFileInputNode(    const char newProcessName[ ], 
+	                                    const int newProcessValue );
+                ConfigFileInputNode( const ConfigFileInputNode& copyNode );
 	            ~ConfigFileInputNode( );
 	    
-	    string  GetProcessName( );
-	    int     GetProcessTime( );
+	    char*   GetProcessName( );
+	    int     GetProcessValue( );
 	    
-	    void    SetProcessName( string newProcessName );
-	    void    SetProcessTime( int newProcessTime );
+	    void    SetProcessName( char newProcessName[ ] );
+	    void    SetProcessValue( int newProcessValue );
 	                                    
-	    bool    operator==( const string processName ) const; 
+	    bool    operator==( const char processName[ ] ) const; 
 	    
 	private:
-	    string  aProcessName;
-	    int     aProcessTime;
+	    char   aProcessName[ STR_MAX_LENGTH ];
+	    int    aProcessValue;
 };
-
-bool ConfigFileInputNode::operator==( const string processName ) const
-{
-    if( aProcessName == processName )
-    {
-        return true;
-    }
-    
-    return false;
-}
 
 #endif

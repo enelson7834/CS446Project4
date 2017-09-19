@@ -21,7 +21,7 @@ class LinkedList
        	        ~LinkedList();
 
         bool    IsEmpty() const;
-        int     GetLenth() const;
+        int     GetLength() const;
 
         bool    InsertEntry(int newPosition, const ItemType& newEntry);
         bool    RemoveEntry(int position);
@@ -81,9 +81,9 @@ Checks to see if the list is empty.
 @return True if list is empty. False otherwise.
 */		
 template <class ItemType>
-LinkedList<ItemType>::IsEmpty()
+bool LinkedList<ItemType>::IsEmpty() const
 {
-	if( aItemCount <= 0 )
+	if( aItemCount <= 0 && apHead == NULL )
 	{
 		return true;
 	} 
@@ -97,7 +97,7 @@ Gets the number of entries currently in the list.
 @return The integer number of entries in the list.
 */
 template <class ItemType>
-LinkedList<ItemType>::GetLenth()
+int LinkedList<ItemType>::GetLength() const
 {
 	return aItemCount;
 } // end GetLength
@@ -122,7 +122,6 @@ bool LinkedList<ItemType>::InsertEntry( int newPosition,
     {
         return false;
     }
-
     if( this->IsEmpty(  ) )
     {
         apHead = new Node<ItemType>( newEntry, NULL );

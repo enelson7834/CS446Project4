@@ -41,7 +41,7 @@ class Node
 		@pre None.
 		@post Item in Node will be returned.
 		@return The item in the Node.*/
-		ItemType GetEntry()			
+		ItemType GetItem()			
 		{ return aItem; }
 
 		/** Returns the pointer to the next Node.

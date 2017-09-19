@@ -1,6 +1,13 @@
-all:	List.o main.o
-	g++ List.o main.o -o ListTest
-List.o:	listnode.cpp listnode.h
-	g++ -c listnode.cpp -o List.o
-main.o:	main.cpp
-	g++ -c main.cpp -o main.o
+CC = g++
+DEBUG = -g
+CFLAGS = -Wall -c $(DEBUG)
+LFLAGS = -Wall $(DEBUG)
+
+p1:	ConfigFileInputNode.o ConfigFileInput.o main.o
+	$(CC) $(LFLAGS) ConfigFileInputNode.o ConfigFileInput.o main.o -o p1
+ConfigFileInput.o: ConfigFileInput.hh ConfigFileInput.cc ConfigFileInputNode.hh LinkedList.hh
+	$(CC) $(CFLAGS) ConfigFileInput.cc
+ConfigFileInputNode.o:	ConfigFileInputNode.cc ConfigFileInputNode.hh
+	$(CC) $(CFLAGS) ConfigFileInputNode.cc
+main.o:	main.cpp ConfigFileInputNode.hh 
+	$(CC) $(CFLAGS) main.cpp

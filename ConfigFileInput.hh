@@ -17,12 +17,21 @@ the config file to retrieve necessary information.
 #define namespace_config_file_input_hh
 
 /////////////////////////////////////////////////////////////////////////////
+// Definitions
+/////////////////////////////////////////////////////////////////////////////
+
+#define FILE_NAME_MAX_LENGTH 30
+#define STR_MAX_LENGTH 300
+#define LOG_FILE_NAME_MAX_LENGTH 30
+
+/////////////////////////////////////////////////////////////////////////////
 // Header Files
 /////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <cstring>
+#include <stdlib.h>
 #include "LinkedList.hh"
 #include "ConfigFileInputNode.hh"
 
@@ -39,7 +48,18 @@ using namespace std;
 class ConfigFileInput
 {
     public:
+        ConfigFileInput( char* fileName );
+        ~ConfigFileInput( );
+
+        int GetProcessValue( const char processName[ ] );
+    protected:
+        bool ParseLine( char lineToParse[ ] );    
     private:
-        string aFilePath;
+        char aFilePath[ FILE_NAME_MAX_LENGTH ];
+        char aLogOutputSpecification;
+        char aLogFilePath[ LOG_FILE_NAME_MAX_LENGTH ];
         LinkedList<ConfigFileInputNode> aListOfProcesses;
+
 };
+
+#endif
