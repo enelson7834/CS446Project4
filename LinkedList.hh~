@@ -16,6 +16,7 @@ template <class ItemType>
 class LinkedList
 {
     public:
+      	/** Default constructor, copy constructor, and deconstructor.*/
        	        LinkedList();
        	        LinkedList(const LinkedList<ItemType>& copyList);
        	        ~LinkedList();

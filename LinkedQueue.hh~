@@ -61,8 +61,7 @@ LinkedQueue::~LinkedQueue( )
 /**< 
 Checks to see if the queue is empty.
 
-@return True if queue is empty. False otherwise.
-*/
+@return True if queue is empty. False otherwise.*/
 template <class ItemType>
 bool LinkedQueue::IsEmpty( ) const
 {
@@ -87,8 +86,7 @@ Enqueue a value to the back of the queue.
 @pre None.
 @post New entry will be inserted into the queue at the end of the queue.
 @param newEntry The new entry to be inserted into the queue.
-@return True if entry was successfully added. False otherwise.
-*/
+@return True if entry was successfully added. False otherwise.*/
 template <class ItemType>
 bool LinkedQueue::Enqueue( const ItemType& newEntry )
 {
@@ -100,8 +98,7 @@ Removes the entry at the given position from the queue.
 
 @pre None.
 @post Removes the element from the front of the queue.
-@return True if the removal was successful. False otherwise.
-*/
+@return True if the removal was successful. False otherwise.*/
 template <class ItemType>
 bool LinkedQueue::Dequeue( )
 {
@@ -113,8 +110,7 @@ Gets value at the front of the queue.
 
 @pre Queue is not empty.
 @post The entry at the front will be returned.
-@return The entry at the given position.
-*/
+@return The entry at the given position.*/
 template <class ItemType>
 ItemType LinkedQueue::PeekFront( ) const
 {
