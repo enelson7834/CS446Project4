@@ -51,7 +51,13 @@ class ConfigFileInput
         ConfigFileInput( char* fileName );
         ~ConfigFileInput( );
 
+        int GetNumberOfProcesses( );
         int GetProcessValue( const char processName[ ] );
+        char* GetProcessName( const int position );
+
+        char GetLogOutputSpecification( );
+        char* GetFilePath( );
+        char* GetLogFilePath( );
     protected:
         bool ParseLine( char lineToParse[ ] );    
     private:

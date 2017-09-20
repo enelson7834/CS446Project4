@@ -8,7 +8,7 @@ ConfigFileInput::ConfigFileInput( char* fileName )
              << endl;
 
         strcpy( aFilePath, "None" );
-        aLogOutputSpecification = 'e';
+        aLogOutputSpecification = 'E';
         strcpy( aLogFilePath, "None" );
         return;
     }
@@ -22,7 +22,7 @@ ConfigFileInput::ConfigFileInput( char* fileName )
              << " and run again." << endl;
 
         strcpy( aFilePath, "None" );
-        aLogOutputSpecification = 'e';
+        aLogOutputSpecification = 'E';
         strcpy( aLogFilePath, "None" );
     } 
     else
@@ -46,6 +46,10 @@ ConfigFileInput::~ConfigFileInput( )
 {
     ;
 }
+int ConfigFileInput::GetNumberOfProcesses( )
+{
+    return aListOfProcesses.GetLength( );
+}
 
 int ConfigFileInput::GetProcessValue( const char processName[ ] )
 {
@@ -57,7 +61,28 @@ int ConfigFileInput::GetProcessValue( const char processName[ ] )
         ++position;
     }
 
+    if( position >= aListOfProcesses.GetLength( ) )
+    {
+        return -1;
+    }
     return aListOfProcesses.GetEntry( position ).GetProcessValue( );
+}
+char* ConfigFileInput::GetProcessName( const int position )
+{
+    return aListOfProcesses.GetEntry( position ).GetProcessName( );
+}
+
+char ConfigFileInput::GetLogOutputSpecification( )
+{
+    return aLogOutputSpecification;
+}
+char* ConfigFileInput::GetFilePath( )
+{
+    return aFilePath;
+}
+char* ConfigFileInput::GetLogFilePath( )
+{
+    return aLogFilePath;
 }
 
 bool ConfigFileInput::ParseLine( char lineToParse[ ] )
@@ -98,17 +123,36 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
     }
     else if( strncmp( lineToParse, "Log:", 4 ) == 0 )
     {
+        if( aLogOutputSpecification != 'E' )
+        {
+            return true;
+        }
+
         if( strstr( lineToParse, "Moniter" ) != NULL )
         {
             aLogOutputSpecification = 'M';
         }
         else if( strstr( lineToParse, "File" ) != NULL )
         {
-            aLogOutputSpecification = 'F';
+            if( aLogOutputSpecification == 'm' )
+            {
+                aLogOutputSpecification = 'E';
+            }
+            else
+            {
+                aLogOutputSpecification = 'F';
+            }
         }
         else if( strstr( lineToParse, "Both" ) != NULL )
         {
-            aLogOutputSpecification = 'B';
+            if( aLogOutputSpecification == 'm' )
+            {
+                aLogOutputSpecification = 'M';
+            }
+            else
+            {
+                aLogOutputSpecification = 'B';
+            }
         }
         else
         {
@@ -134,8 +178,9 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
 
         if( strstr( lineToParse, ".out" ) == NULL )
         {
-            cout << "Error in log file path. Incorrect extention." << endl;
-            return false;
+            cout << "Error in log file path. Incorrect extention. Will "
+                 << "only log to moniter." << endl;
+            aLogOutputSpecification = 'm';
         }
 
         strcpy( aLogFilePath, tempFileName ); 
@@ -149,7 +194,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
     else
     {
         char tempProcessName[ 30 ] = {'\0'};
-        int tempProcessValue = 0;
+        int tempProcessValue = -1;
         char* tempValueToken;
         char* tempNameToken;
 
@@ -161,18 +206,34 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         tempValueToken[ strlen( tempValueToken ) - 2 ] = '\0';
         tempProcessValue = atoi( tempValueToken );
 
-        tempNameToken = strtok( lineToParse, " " );
-        while(  strncmp( tempNameToken, "cycle", 5 ) != 0   &&
-                strncmp( tempNameToken, "display", 7 ) != 0 &&
-                strncmp( tempNameToken, "memory", 6 ) != 0      )
+        tempNameToken = strtok( lineToParse, " :;" );
+        while( strpbrk( tempNameToken, "(" ) == NULL )
         {
             strcat( tempProcessName, tempNameToken );
             strcat( tempProcessName, " " );
             tempNameToken = strtok( NULL, " " );
         }
 
-        tempProcessName[ strlen( tempProcessName ) - 1 ] = '\0';
-        tempProcessName[ 0 ] = tolower( tempProcessName[ 0 ] );
+        int goodToCut = 0;
+        for( unsigned int i = strlen( tempProcessName ); i > 0; i-- )
+        {
+            if( tempProcessName[ i ] == ' ' )
+            {
+                if( goodToCut == 2 )
+                {
+                    tempProcessName[ i ] = '\0';
+                } 
+                else
+                {
+                    goodToCut++;
+                }
+            }
+        }
+
+        for( unsigned int i = 0; i < strlen( tempProcessName ); i++ )
+        {
+           tempProcessName[ i ] = tolower( tempProcessName[ i ] );
+        }
         
         ConfigFileInputNode tempNode( tempProcessName, tempProcessValue );
 

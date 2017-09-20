@@ -11,6 +11,7 @@ LinkedQueue ADT and their paramaters/functions.*/
 #define linked_queue_h
 
 #include "Node.hh"
+#include "LinkedList.hh"
 
 template <class ItemType>
 class LinkedQueue
@@ -35,7 +36,7 @@ class LinkedQueue
 Default constructor
 */
 template <class ItemType>
-LinkedQueue::LinkedQueue( )
+LinkedQueue<ItemType>::LinkedQueue( )
 { 
     apListPtr = NULL;
 } // end Default Constructor
@@ -44,16 +45,16 @@ LinkedQueue::LinkedQueue( )
 Copy Constructor
 */
 template <class ItemType>
-LinkedQueue::LinkedQueue( const LinkedQueue<ItemType>& copyQueue )
+LinkedQueue<ItemType>::LinkedQueue( const LinkedQueue<ItemType>& copyQueue )
 {
-    apListPtr = new LinkedList( *( copyQueue.apListPtr ) );
+    apListPtr = new LinkedList<ItemType>( *( copyQueue.apListPtr ) );
 } // end Copy Constructor
 
 /**<
 Deconstructor
 */
 template <class ItemType>
-LinkedQueue::~LinkedQueue( )
+LinkedQueue<ItemType>::~LinkedQueue( )
 {
     delete apListPtr;
 } // end Deconstructor
@@ -64,7 +65,7 @@ Checks to see if the queue is empty.
 @return True if queue is empty. False otherwise.
 */
 template <class ItemType>
-bool LinkedQueue::IsEmpty( ) const
+bool LinkedQueue<ItemType>::IsEmpty( ) const
 {
     return apListPtr->IsEmpty();
 } // end IsEmpty
@@ -75,7 +76,7 @@ Gets the number of entries currently in the queue.
 @return The integer number of entries in the queue.
 */
 template <class ItemType>
-int LinkedQueue::GetSize( ) const
+int LinkedQueue<ItemType>::GetSize( ) const
 {
     return apListPtr->getLength( );
 } // end GetSize
@@ -90,7 +91,7 @@ Enqueue a value to the back of the queue.
 @return True if entry was successfully added. False otherwise.
 */
 template <class ItemType>
-bool LinkedQueue::Enqueue( const ItemType& newEntry )
+bool LinkedQueue<ItemType>::Enqueue( const ItemType& newEntry )
 {
     return apListPtr->InsertEntry( apListPtr->GetSize( ), newEntry );
 } // end Enqueue
@@ -103,7 +104,7 @@ Removes the entry at the given position from the queue.
 @return True if the removal was successful. False otherwise.
 */
 template <class ItemType>
-bool LinkedQueue::Dequeue( )
+bool LinkedQueue<ItemType>::Dequeue( )
 {
     return apListPtr->RemoveEntry( 0 );
 } // end Dequeue
@@ -116,7 +117,7 @@ Gets value at the front of the queue.
 @return The entry at the given position.
 */
 template <class ItemType>
-ItemType LinkedQueue::PeekFront( ) const
+ItemType LinkedQueue<ItemType>::PeekFront( ) const
 {
     return apListPtr->GetEntry( 0 );
 } // end PeekFront
