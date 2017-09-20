@@ -2,6 +2,10 @@
 
 ConfigFileInput::ConfigFileInput( char* fileName )
 {
+
+    aLogOutputSpecification = 'E';
+
+    aListOfProcesses = new LinkedList<ConfigFileInputNode>;
     if( strstr( fileName, ".conf" ) == NULL )
     {
         cout << "Error in configuration file path. Incorrect extention." 
@@ -42,34 +46,43 @@ ConfigFileInput::ConfigFileInput( char* fileName )
     fin.close();
 }
 
+ConfigFileInput::ConfigFileInput( const ConfigFileInput& copyInput )
+{
+    strcpy( aFilePath, copyInput.aFilePath );
+    aLogOutputSpecification = copyInput.aLogOutputSpecification;
+    strcpy( aLogFilePath, copyInput.aLogFilePath );
+    aListOfProcesses = new LinkedList<ConfigFileInputNode>
+                                        ( ( copyInput.aListOfProcesses ) );
+}
+
 ConfigFileInput::~ConfigFileInput( )
 {
-    ;
+    delete aListOfProcesses;
 }
 int ConfigFileInput::GetNumberOfProcesses( )
 {
-    return aListOfProcesses.GetLength( );
+    return aListOfProcesses->GetLength( );
 }
 
 int ConfigFileInput::GetProcessValue( const char processName[ ] )
 {
     int position = 0;
     while( strcmp( processName, 
-            aListOfProcesses.GetEntry( position ).GetProcessName( ) ) != 0
-            && position < aListOfProcesses.GetLength( ) )
+            aListOfProcesses->GetEntry( position ).GetProcessName( ) ) != 0
+            && position < aListOfProcesses->GetLength( ) )
     {
         ++position;
     }
 
-    if( position >= aListOfProcesses.GetLength( ) )
+    if( position >= aListOfProcesses->GetLength( ) )
     {
         return -1;
     }
-    return aListOfProcesses.GetEntry( position ).GetProcessValue( );
+    return aListOfProcesses->GetEntry( position ).GetProcessValue( );
 }
 char* ConfigFileInput::GetProcessName( const int position )
 {
-    return aListOfProcesses.GetEntry( position ).GetProcessName( );
+    return aListOfProcesses->GetEntry( position ).GetProcessName( );
 }
 
 char ConfigFileInput::GetLogOutputSpecification( )
@@ -168,15 +181,21 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
     {
         char tempFileName[ STR_MAX_LENGTH ];
         int position = 0;
-        while( lineToParse[ position + 14 ] != '\n' 
+        while( lineToParse[ position + 15 ] != '\n' 
                 && position < STR_MAX_LENGTH )
         {
-            tempFileName[ position ] = lineToParse[ position + 14 ];
+            tempFileName[ position ] = lineToParse[ position + 15 ];
             position++;
         }
         tempFileName[ position ] = '\0';
 
         if( strstr( lineToParse, ".out" ) == NULL )
+        {
+            cout << "Error in log file path. Incorrect extention. Will "
+                 << "only log to moniter." << endl;
+            aLogOutputSpecification = 'm';
+        }
+        if( strpbrk( tempFileName, " " ) != NULL )
         {
             cout << "Error in log file path. Incorrect extention. Will "
                  << "only log to moniter." << endl;
@@ -237,8 +256,8 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         
         ConfigFileInputNode tempNode( tempProcessName, tempProcessValue );
 
-        aListOfProcesses.InsertEntry( 0, tempNode );
-
+        aListOfProcesses->InsertEntry(  aListOfProcesses->GetLength( ), 
+                                        tempNode );
         return true;
     }
 } 

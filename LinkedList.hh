@@ -23,12 +23,12 @@ class LinkedList
         bool    IsEmpty() const;
         int     GetLength() const;
 
-        bool    InsertEntry(int newPosition, const ItemType& newEntry);
-        bool    RemoveEntry(int position);
+        bool    InsertEntry(const int newPosition, const ItemType& newEntry);
+        bool    RemoveEntry(const int position);
         void    Clear();
         bool    SetEntry(int position, const ItemType& newEntry);
         
-        ItemType    GetEntry(int position);
+        ItemType    GetEntry(int position) const;
 
 	private:
 	    Node<ItemType>* 	apHead;
@@ -50,18 +50,16 @@ Copy Constructor
 template <class ItemType>
 LinkedList<ItemType>::LinkedList( const LinkedList<ItemType>& copyList )
 {
+    this->aItemCount = 0;
     if( copyList.IsEmpty( ) )
     {
         this->apHead = NULL;
-        this->aItemCount = 0;
     }
     else
     {
-        for( int position = 0; position < copyList->aItemCount; 
-                                                        ++position )
+        for( int position = 0; position < copyList.aItemCount; ++position )
         {
-            this->InsertEntry( position, copyList->
-                                                GetItem( position ) );
+            this->InsertEntry( position, copyList.GetEntry( position ) );
         }
     }
 } // end Copy Constructor
@@ -115,7 +113,7 @@ list.
 @note Position starts at 0 and goes to ItemCount -1.
 */
 template <class ItemType>
-bool LinkedList<ItemType>::InsertEntry( int newPosition, 
+bool LinkedList<ItemType>::InsertEntry( const int newPosition, 
                                         const ItemType& newEntry )
 {
     if( newPosition > aItemCount || newPosition < 0 ) 
@@ -162,7 +160,7 @@ removed was the first entry, then the head pointer is adjusted.
 @return True if the removal was successful. False otherwise.
 */
 template <class ItemType>
-bool LinkedList<ItemType>::RemoveEntry( int position )
+bool LinkedList<ItemType>::RemoveEntry( const int position )
 {
     if( this->IsEmpty(  ) ) 
     {
@@ -210,6 +208,7 @@ void LinkedList<ItemType>::Clear(  )
     {
         this->RemoveEntry( 0 );
     }
+    aItemCount = 0;
 } // end Clear
 
 /**<
@@ -221,7 +220,7 @@ Gets value of entry at a given position in the list.
 @return The entry at the given position.
 */
 template <class ItemType>
-ItemType LinkedList<ItemType>::GetEntry( int position )
+ItemType LinkedList<ItemType>::GetEntry( int position ) const
 {
     if( this->IsEmpty(  ) ) return ItemType(  );
     if( position >= aItemCount || position < 0 ) return ItemType(  );

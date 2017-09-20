@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
+#include <cstdlib>
 
 #include "MetaDataInfoNode.hh"
 #include "LinkedQueue.hh"
@@ -19,7 +20,7 @@ class MetaDataInfo
         MetaDataInfo( char* fileName );
         ~MetaDataInfo( );
 
-        void processData( ConfigFileInput configFile );
+        void ProcessData( ConfigFileInput configFile );
     protected:
         bool ParseLine( char lineToParse[ ] );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );
@@ -29,8 +30,10 @@ class MetaDataInfo
                                 ofstream& logFile );
         void LogOutput( char logSpecification, char* logMessage, 
                         ofstream& logFile );
+        void itoa( int inputValue, char* outputString, int base );
+        void ReverseString( char* string, int size );
     private:
-        LinkedQueue<MetaDataInfoNode> aQueueOfMetaData;
+        LinkedQueue<MetaDataInfoNode>* aQueueOfMetaData;
 };
 
 #endif

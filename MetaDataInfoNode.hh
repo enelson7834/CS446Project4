@@ -1,3 +1,5 @@
+#include <cstring>
+
 #ifndef meta_data_info_node_hh
 #define meta_data_info_node_hh
 
@@ -25,7 +27,7 @@ class MetaDataInfoNode
         MetaDataInfoNode& operator=( const MetaDataInfoNode& copyNode );
     private:
         char aMetaDataCode;
-        char aMetaDataDescriptor[ 30 ];
+        char* aMetaDataDescriptor;
         int aNumberOfCycles;
         int aErrorCode;
 };

@@ -2,6 +2,7 @@
 
 MetaDataInfo::MetaDataInfo( char* fileName )
 {
+    aQueueOfMetaData = new LinkedQueue<MetaDataInfoNode>;
     if( strstr( fileName, ".mdf" ) == NULL )
     {
         cout << "Error reading meta data file: Incorrect extention." << endl;
@@ -33,43 +34,63 @@ MetaDataInfo::MetaDataInfo( char* fileName )
 }
 MetaDataInfo::~MetaDataInfo( )
 {
-    ;
+    delete aQueueOfMetaData;
 }
 
-void MetaDataInfo::processData( ConfigFileInput configFile )
+void MetaDataInfo::ProcessData( ConfigFileInput configFile )
 {
+    char* tempLogFilePath = new char[ 30 ];
+    char* tempLogDirectory = new char[ 30 ];
+    char* tempLogFilePathPtr;
     char logSpecification = configFile.GetLogOutputSpecification( );
-    ofstream logFile;
+
+    strcpy( tempLogFilePath, configFile.GetLogFilePath( ) );
     if( logSpecification == 'F' || logSpecification == 'B' ) 
     {
-        logFile.open( configFile.GetLogFilePath( ) );
-        if( !logFile.good( ) )
+        if( strpbrk( tempLogFilePath, "/" ) != NULL )
         {
-            cout << "Error creating LogFile. Please try again." << endl;
-            logFile.close();
-            return;
-        }    
+            tempLogFilePathPtr = strtok( tempLogFilePath, "/" );
+            strcpy( tempLogDirectory, "mkdir -p " );
+            strcat( tempLogDirectory, tempLogFilePathPtr );
+
+            const int dir_err = system( tempLogDirectory );
+            if( -1 == dir_err )
+            {
+                cout << "Error creating directory." << endl;
+                exit(1);
+            }
+        }   
     }
 
-    LinkedQueue<MetaDataInfoNode> tempStorageQueue( );
+    ofstream logFile( configFile.GetLogFilePath( ) );
+    if( !logFile.good( ) )
+    {
+        cout << "Error creating LogFile. Please try again." << endl;
+        logFile.close();
+        return;
+    } 
+
+
+    LinkedQueue<MetaDataInfoNode> tempStorageQueue;
 
     char tempMessage[ 500 ];
     char tempProcessName[ 30 ];
     char tempProcessValue[ 5 ];
 
-    tempMessage = {"Configuration File Data:\n"};
+    strcpy( tempMessage, "Configuration File Data:\n" );
 
     LogOutput( logSpecification, tempMessage, logFile );
     for( int i = 0; i < configFile.GetNumberOfProcesses( ); i++ )
     {
         tempMessage[ 0 ] = '\0';
         strcpy( tempProcessName, configFile.GetProcessName( i ) );
+        cout << tempProcessName << endl;
         itoa(   configFile.GetProcessValue( tempProcessName ), 
                 tempProcessValue, 10 );
 
-        for( int j = 0; j < (int) strlen( tempProcessName ); j++ );
+        for( int j = 0; j < (int) strlen( tempProcessName ); j++ )
         {
-            if( j == 0 || tempProcessName[ j - 1 ] == " " )
+            if( j == 0 || tempProcessName[ j - 1 ] == ' ' )
             {
                 tempProcessName[ j ] = toupper( tempProcessName[ j ] );
             }
@@ -96,30 +117,27 @@ void MetaDataInfo::processData( ConfigFileInput configFile )
     {
         strcat( tempMessage, "monitor" );
     }
-    else if( logSpecification == 'B' )
+    if( logSpecification == 'B' )
     {
         strcat( tempMessage, " and " );
     }
-    else if( logSpecification == 'F' || logSpecification == 'B' )
+    if( logSpecification == 'F' || logSpecification == 'B' )
     {
         strcat( tempMessage, configFile.GetLogFilePath( ) );
     }
-    else
-    {
-        strcat( tempMessage, "None" );
-    }
+
     strcat( tempMessage, "\n\nMeta-Data Metrics\n" );
 
     LogOutput( logSpecification, tempMessage, logFile ); 
 
-    char* tempToken;
+    char* tempToken = new char[ 10 ];
     char tempMetaDataCode = '\0';
     char tempMetaDataDescriptor[ 30 ];
     int tempNumberOfCycles = 0;
     int tempProcessRunTime = 0;
     int tempErrorCode = 0;
 
-    while( !aQueueOfMetaData.IsEmpty( ) )
+    while( !aQueueOfMetaData->IsEmpty( ) )
     {
         tempMetaDataCode = '\0';
         tempMetaDataDescriptor[ 0 ] = '\0';
@@ -128,12 +146,12 @@ void MetaDataInfo::processData( ConfigFileInput configFile )
         tempErrorCode = 0;
         tempMessage[ 0 ] = '\0';
 
-        tempMetaDataCode = aQueueOfMetaData.PeekFront( ).GetMetaDataCode( );
+        tempMetaDataCode = aQueueOfMetaData->PeekFront( ).GetMetaDataCode( );
         strcpy(    tempMetaDataDescriptor, 
-                    aQueueOfMetaData.PeekFront( ).GetMetaDataDescriptor( ) );
-        tempNumberOfCycles = aQueueOfMetaData.
+                    aQueueOfMetaData->PeekFront( ).GetMetaDataDescriptor( ) );
+        tempNumberOfCycles = aQueueOfMetaData->
                                             PeekFront( ).GetNumberOfCycles( );
-        tempErrorCode = aQueueOfMetaData.PeekFront( ).GetErrorCode( );
+        tempErrorCode = aQueueOfMetaData->PeekFront( ).GetErrorCode( );
         if( tempErrorCode != 0 )
         {
             ProcessErrorCode( logSpecification, tempErrorCode, logFile );
@@ -308,17 +326,19 @@ void MetaDataInfo::processData( ConfigFileInput configFile )
             ProcessErrorCode( logSpecification, tempErrorCode, logFile );
         }
 
-        tempStorageQueue.Enqueue( aQueueOfMetaData.PeekFront( ) );
-        aQueueOfMetaData.Dequeue( );
+        tempStorageQueue.Enqueue( aQueueOfMetaData->PeekFront( ) );
+        aQueueOfMetaData->Dequeue( );
     }
 
     logFile.close( );
 
     while( !tempStorageQueue.IsEmpty( ) )
     {
-        aQueueOfMetaData.Enqueue( tempStorageQueue.PeekFront( ) );
+        aQueueOfMetaData->Enqueue( tempStorageQueue.PeekFront( ) );
         tempStorageQueue.Dequeue( ); 
     }
+
+    delete tempToken;
 }
 
 bool MetaDataInfo::ParseLine( char lineToParse[ ] )
@@ -400,7 +420,7 @@ bool MetaDataInfo::ParseLine( char lineToParse[ ] )
             tempNode.SetMetaDataDescriptor( tempMetaDataDescriptor );
             tempNode.SetNumberOfCycles( tempNumberOfCycles );
             tempNode.SetErrorCode( tempErrorCode );
-            aQueueOfMetaData.Enqueue( tempNode );
+            aQueueOfMetaData->Enqueue( tempNode );
 
             tempHelperPtr = tempHelperPtrAnchor;
             strcpy( tempHelperPtr, tempHelper );
@@ -511,12 +531,56 @@ void MetaDataInfo::LogOutput(   char logSpecification,
     {
         cout << logMessage;
     }
-    else if( logSpecification == 'F' || logSpecification == 'B' )
+    if( logSpecification == 'F' || logSpecification == 'B' )
     {
         logFile << logMessage;
     }
-    else
+}        
+void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
+{
+    int i = 0;
+    bool isNegative = false;
+
+    if( inputValue == 0 )
     {
-        ;
+        outputString[ i++ ] = '0';
+        outputString[ i ] = '\0';
+        return;
+    }
+    else if( inputValue < 0 )
+    {
+        isNegative = true;
+        inputValue *= -1;
+    }
+
+    while( inputValue != 0 )
+    {
+        int temp = inputValue % base;
+        outputString[i++] = ( temp > 9 )? ( temp - 10 ) + 'a' : temp + '0';
+        inputValue /= base;
+    }
+
+    if( isNegative )
+    {
+        outputString[ i++ ] = '-';
+    }
+
+    outputString[ i-- ] = '\0';
+
+    ReverseString( outputString, i );
+
+    return;
+}
+
+void MetaDataInfo::ReverseString( char* string, int size )
+{
+    char buffer;
+    for( int i = size; i > size/2; i-- )
+    {
+        buffer = string[ i ];
+        string[ i ] = string[ size - i ];
+        string[ size - i ] = buffer;
     }
 }
+
+

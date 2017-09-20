@@ -49,6 +49,7 @@ class ConfigFileInput
 {
     public:
         ConfigFileInput( char* fileName );
+        ConfigFileInput( const ConfigFileInput& copyInput );
         ~ConfigFileInput( );
 
         int GetNumberOfProcesses( );
@@ -64,7 +65,7 @@ class ConfigFileInput
         char aFilePath[ FILE_NAME_MAX_LENGTH ];
         char aLogOutputSpecification;
         char aLogFilePath[ LOG_FILE_NAME_MAX_LENGTH ];
-        LinkedList<ConfigFileInputNode> aListOfProcesses;
+        LinkedList<ConfigFileInputNode>* aListOfProcesses;
 
 };
 

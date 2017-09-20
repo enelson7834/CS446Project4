@@ -1,14 +1,16 @@
 #include "MetaDataInfoNode.hh"
 
-MetaDataInfoNode::MetaDataInfoNode( );
+MetaDataInfoNode::MetaDataInfoNode( )
 {
     aMetaDataCode = '\0';
-    aMetaDataDescriptor = {'\0'};
+    aMetaDataDescriptor = new char[ 30 ];
     aNumberOfCycles = -1;
     aErrorCode = 0;
 }
 MetaDataInfoNode::MetaDataInfoNode( const MetaDataInfoNode& copyNode )
 {
+    aMetaDataDescriptor = new char[ 30 ];
+
     aMetaDataCode = copyNode.aMetaDataCode;
     strcpy( aMetaDataDescriptor, copyNode.aMetaDataDescriptor );
     aNumberOfCycles = copyNode.aNumberOfCycles;
@@ -21,6 +23,8 @@ MetaDataInfoNode::MetaDataInfoNode( const char newMetaDataCode,
                                     const int newNumberOfCycles,
                                     const int newErrorCode )
 {
+    aMetaDataDescriptor = new char[ 30 ];
+
     aMetaDataCode = newMetaDataCode;
     strcpy( aMetaDataDescriptor, newMetaDataDescriptor );
     aNumberOfCycles = newNumberOfCycles;
@@ -28,7 +32,7 @@ MetaDataInfoNode::MetaDataInfoNode( const char newMetaDataCode,
 }
 MetaDataInfoNode::~MetaDataInfoNode( )
 {
-    ;
+    delete aMetaDataDescriptor;
 }
 
 char MetaDataInfoNode::SetMetaDataCode( const char newMetaDataCode )
@@ -51,6 +55,7 @@ int MetaDataInfoNode::SetNumberOfCycles( const int newNumberOfCycles )
 int MetaDataInfoNode::SetErrorCode( const int newErrorCode )
 {
     aErrorCode = newErrorCode;
+    return aErrorCode;
 }
 
 char MetaDataInfoNode::GetMetaDataCode( ) const

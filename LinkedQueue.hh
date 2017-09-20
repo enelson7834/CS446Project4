@@ -93,7 +93,7 @@ Enqueue a value to the back of the queue.
 template <class ItemType>
 bool LinkedQueue<ItemType>::Enqueue( const ItemType& newEntry )
 {
-    return apListPtr->InsertEntry( apListPtr->GetSize( ), newEntry );
+    return apListPtr->InsertEntry( apListPtr->GetLength( ), newEntry );
 } // end Enqueue
 
 /**<
