@@ -1,0 +1,183 @@
+\begin{theindex}
+
+  \item {$\sim $\discretionary {-}{}{}Linked\discretionary {-}{}{}List}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+  \item {$\sim $\discretionary {-}{}{}Linked\discretionary {-}{}{}Queue}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{12}
+  \item {$\sim $\discretionary {-}{}{}Node}
+    \subitem {Node}, \hyperpage{17}
+
+  \indexspace
+
+  \item {Adjust\discretionary {-}{}{}Line\discretionary {-}{}{}Elements}
+    \subitem {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input}, 
+		\hyperpage{7}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{14}
+
+  \indexspace
+
+  \item {Clear}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+  \item {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input}, 
+		\hyperpage{7}
+    \subitem {Adjust\discretionary {-}{}{}Line\discretionary {-}{}{}Elements}, 
+		\hyperpage{7}
+    \subitem {Get\discretionary {-}{}{}Process\discretionary {-}{}{}Value}, 
+		\hyperpage{8}
+    \subitem {Parse\discretionary {-}{}{}Line}, \hyperpage{8}
+    \subitem {Remove\discretionary {-}{}{}Spaces}, \hyperpage{8}
+  \item {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input.\discretionary {-}{}{}hh}, 
+		\hyperpage{19}
+  \item {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input\discretionary {-}{}{}Node}, 
+		\hyperpage{9}
+  \item {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input\discretionary {-}{}{}Node.\discretionary {-}{}{}hh}, 
+		\hyperpage{19}
+
+  \indexspace
+
+  \item {Dequeue}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{13}
+
+  \indexspace
+
+  \item {Enqueue}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{13}
+
+  \indexspace
+
+  \item {get\discretionary {-}{}{}Data}
+    \subitem {Node}, \hyperpage{18}
+  \item {Get\discretionary {-}{}{}Entry}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+  \item {Get\discretionary {-}{}{}Length}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+  \item {get\discretionary {-}{}{}Next}
+    \subitem {Node}, \hyperpage{18}
+  \item {Get\discretionary {-}{}{}Process\discretionary {-}{}{}Value}
+    \subitem {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input}, 
+		\hyperpage{8}
+
+  \indexspace
+
+  \item {Insert\discretionary {-}{}{}Entry}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+  \item {Is\discretionary {-}{}{}Empty}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{11}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{13}
+  \item {Is\discretionary {-}{}{}Full}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{11}
+  \item {itoa}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{14}
+
+  \indexspace
+
+  \item {Linked\discretionary {-}{}{}List}
+    \subitem {$\sim $\discretionary {-}{}{}Linked\discretionary {-}{}{}List}, 
+		\hyperpage{10}
+    \subitem {Clear}, \hyperpage{10}
+    \subitem {Get\discretionary {-}{}{}Entry}, \hyperpage{10}
+    \subitem {Get\discretionary {-}{}{}Length}, \hyperpage{10}
+    \subitem {Insert\discretionary {-}{}{}Entry}, \hyperpage{10}
+    \subitem {Is\discretionary {-}{}{}Empty}, \hyperpage{11}
+    \subitem {Is\discretionary {-}{}{}Full}, \hyperpage{11}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{10}
+    \subitem {pop}, \hyperpage{11}
+    \subitem {print}, \hyperpage{11}
+    \subitem {push}, \hyperpage{11}
+    \subitem {Remove\discretionary {-}{}{}Entry}, \hyperpage{11}
+  \item {Linked\discretionary {-}{}{}List$<$ Item\discretionary {-}{}{}Type $>$}, 
+		\hyperpage{9}
+  \item {Linked\discretionary {-}{}{}Queue}
+    \subitem {$\sim $\discretionary {-}{}{}Linked\discretionary {-}{}{}Queue}, 
+		\hyperpage{12}
+    \subitem {Dequeue}, \hyperpage{13}
+    \subitem {Enqueue}, \hyperpage{13}
+    \subitem {Is\discretionary {-}{}{}Empty}, \hyperpage{13}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{12}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{12}
+    \subitem {Peek\discretionary {-}{}{}Front}, \hyperpage{13}
+  \item {Linked\discretionary {-}{}{}Queue$<$ Item\discretionary {-}{}{}Type $>$}, 
+		\hyperpage{12}
+
+  \indexspace
+
+  \item {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{13}
+    \subitem {Adjust\discretionary {-}{}{}Line\discretionary {-}{}{}Elements}, 
+		\hyperpage{14}
+    \subitem {itoa}, \hyperpage{14}
+    \subitem {Parse\discretionary {-}{}{}Line}, \hyperpage{14}
+    \subitem {Process\discretionary {-}{}{}Data}, \hyperpage{15}
+    \subitem {Process\discretionary {-}{}{}Error\discretionary {-}{}{}Code}, 
+		\hyperpage{15}
+    \subitem {Remove\discretionary {-}{}{}Spaces}, \hyperpage{16}
+    \subitem {Reverse\discretionary {-}{}{}String}, \hyperpage{16}
+  \item {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info.\discretionary {-}{}{}cc}, 
+		\hyperpage{20}
+  \item {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info.\discretionary {-}{}{}hh}, 
+		\hyperpage{21}
+  \item {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info\discretionary {-}{}{}Node}, 
+		\hyperpage{17}
+  \item {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info\discretionary {-}{}{}Node.\discretionary {-}{}{}cc}, 
+		\hyperpage{21}
+  \item {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info\discretionary {-}{}{}Node.\discretionary {-}{}{}hh}, 
+		\hyperpage{22}
+
+  \indexspace
+
+  \item {Node}
+    \subitem {$\sim $\discretionary {-}{}{}Node}, \hyperpage{17}
+    \subitem {get\discretionary {-}{}{}Data}, \hyperpage{18}
+    \subitem {get\discretionary {-}{}{}Next}, \hyperpage{18}
+    \subitem {Node}, \hyperpage{17}
+    \subitem {set\discretionary {-}{}{}Data}, \hyperpage{18}
+    \subitem {set\discretionary {-}{}{}Next}, \hyperpage{18}
+  \item {Node$<$ Item\discretionary {-}{}{}Type $>$}, \hyperpage{17}
+  \item {Node.\discretionary {-}{}{}hh}, \hyperpage{22}
+
+  \indexspace
+
+  \item {Parse\discretionary {-}{}{}Line}
+    \subitem {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input}, 
+		\hyperpage{8}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{14}
+  \item {Peek\discretionary {-}{}{}Front}
+    \subitem {Linked\discretionary {-}{}{}Queue}, \hyperpage{13}
+  \item {pop}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{11}
+  \item {print}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{11}
+  \item {Process\discretionary {-}{}{}Data}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{15}
+  \item {Process\discretionary {-}{}{}Error\discretionary {-}{}{}Code}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{15}
+  \item {push}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{11}
+
+  \indexspace
+
+  \item {Remove\discretionary {-}{}{}Entry}
+    \subitem {Linked\discretionary {-}{}{}List}, \hyperpage{11}
+  \item {Remove\discretionary {-}{}{}Spaces}
+    \subitem {Config\discretionary {-}{}{}File\discretionary {-}{}{}Input}, 
+		\hyperpage{8}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{16}
+  \item {Reverse\discretionary {-}{}{}String}
+    \subitem {Meta\discretionary {-}{}{}Data\discretionary {-}{}{}Info}, 
+		\hyperpage{16}
+
+  \indexspace
+
+  \item {set\discretionary {-}{}{}Data}
+    \subitem {Node}, \hyperpage{18}
+  \item {set\discretionary {-}{}{}Next}
+    \subitem {Node}, \hyperpage{18}
+
+\end{theindex}

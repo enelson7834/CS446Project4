@@ -1,3 +1,10 @@
+/**
+@file ConfigFileInputNode.cc
+@author Eugene Nelson
+@breif The implamentation for the ConfigFileInputNode class
+@version    1.0 Eugene Nelon
+            Originally developed ( 9 - 20 - 17 ) 
+*/
 #include "ConfigFileInputNode.hh"
 
 ConfigFileInputNode::ConfigFileInputNode( )
@@ -48,4 +55,16 @@ void    ConfigFileInputNode::SetProcessValue( int newaProcessValue )
 bool    ConfigFileInputNode::operator==( const char processName[ ] ) const
 {
     return strcmp( aProcessName, processName );
+}
+ConfigFileInputNode ConfigFileInputNode::operator=( 
+                                    const ConfigFileInputNode& copyNode )
+{
+    if( this == &copyNode )
+    {
+        return *this;
+    }
+    strcpy( aProcessName, copyNode.aProcessName );
+    aProcessValue = copyNode.aProcessValue;
+
+    return *this;
 }

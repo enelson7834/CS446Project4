@@ -1,0 +1,117 @@
+\hypertarget{class_linked_queue}{\section{Linked\-Queue$<$ Item\-Type $>$ Class Template Reference}
+\label{class_linked_queue}\index{Linked\-Queue$<$ Item\-Type $>$@{Linked\-Queue$<$ Item\-Type $>$}}
+}
+
+
+{\ttfamily \#include $<$Linked\-Queue.\-hh$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_linked_queue_a5d98abc89b1b3cbb758ec4cb45e9248a}{Linked\-Queue} ()
+\item 
+\hyperlink{class_linked_queue_a29b5660d68aed2eb09d74877602e7ff1}{Linked\-Queue} (const \hyperlink{class_linked_queue}{Linked\-Queue}$<$ Item\-Type $>$ \&source)
+\item 
+\hyperlink{class_linked_queue_a2a88d36f0ddf6550a6e67bb1afc9a439}{$\sim$\-Linked\-Queue} ()
+\item 
+bool \hyperlink{class_linked_queue_a8a9f1695afe195c794fa070452b5793a}{Is\-Empty} () const 
+\item 
+bool \hyperlink{class_linked_queue_a143277a1f1cced81d9eeb829d7028440}{Enqueue} (const Item\-Type \&new\-Entry)
+\item 
+bool \hyperlink{class_linked_queue_a1db105697494ef453f24f5bb5365232e}{Dequeue} ()
+\item 
+Item\-Type $\ast$ \hyperlink{class_linked_queue_adec4e9cd2e4e8e31c072fecb7ed76334}{Peek\-Front} ()
+\item 
+\hypertarget{class_linked_queue_ae2c4221b897ca9a43585c4f13e3ea179}{int {\bfseries Get\-Size} ()}\label{class_linked_queue_ae2c4221b897ca9a43585c4f13e3ea179}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class Item\-Type$>$class Linked\-Queue$<$ Item\-Type $>$}
+
+Default constructor for linked queue 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_linked_queue_a5d98abc89b1b3cbb758ec4cb45e9248a}{\index{Linked\-Queue@{Linked\-Queue}!Linked\-Queue@{Linked\-Queue}}
+\index{Linked\-Queue@{Linked\-Queue}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{Linked\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ {\bf Linked\-Queue}$<$ Item\-Type $>$\-::{\bf Linked\-Queue} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_queue_a5d98abc89b1b3cbb758ec4cb45e9248a}
+Copy constructor for Linked queue class \hypertarget{class_linked_queue_a29b5660d68aed2eb09d74877602e7ff1}{\index{Linked\-Queue@{Linked\-Queue}!Linked\-Queue@{Linked\-Queue}}
+\index{Linked\-Queue@{Linked\-Queue}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{Linked\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type$>$ {\bf Linked\-Queue}$<$ Item\-Type $>$\-::{\bf Linked\-Queue} (
+\begin{DoxyParamCaption}
+\item[{const {\bf Linked\-Queue}$<$ Item\-Type $>$ \&}]{source}
+\end{DoxyParamCaption}
+)}}\label{class_linked_queue_a29b5660d68aed2eb09d74877602e7ff1}
+Deconstructor for linked queue class \hypertarget{class_linked_queue_a2a88d36f0ddf6550a6e67bb1afc9a439}{\index{Linked\-Queue@{Linked\-Queue}!$\sim$\-Linked\-Queue@{$\sim$\-Linked\-Queue}}
+\index{$\sim$\-Linked\-Queue@{$\sim$\-Linked\-Queue}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{$\sim$\-Linked\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ {\bf Linked\-Queue}$<$ Item\-Type $>$\-::$\sim${\bf Linked\-Queue} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_queue_a2a88d36f0ddf6550a6e67bb1afc9a439}
+Checks if linked queue is empty
+
+\begin{DoxyReturn}{Returns}
+succes status of function 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_linked_queue_a1db105697494ef453f24f5bb5365232e}{\index{Linked\-Queue@{Linked\-Queue}!Dequeue@{Dequeue}}
+\index{Dequeue@{Dequeue}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{Dequeue}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ bool {\bf Linked\-Queue}$<$ Item\-Type $>$\-::Dequeue (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_queue_a1db105697494ef453f24f5bb5365232e}
+Peeks at the front element of the queue
+
+\begin{DoxyReturn}{Returns}
+poiner to element at front of queue 
+\end{DoxyReturn}
+\hypertarget{class_linked_queue_a143277a1f1cced81d9eeb829d7028440}{\index{Linked\-Queue@{Linked\-Queue}!Enqueue@{Enqueue}}
+\index{Enqueue@{Enqueue}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{Enqueue}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type$>$ bool {\bf Linked\-Queue}$<$ Item\-Type $>$\-::Enqueue (
+\begin{DoxyParamCaption}
+\item[{const Item\-Type \&}]{new\-Entry}
+\end{DoxyParamCaption}
+)}}\label{class_linked_queue_a143277a1f1cced81d9eeb829d7028440}
+Removes an element from the front of the queue
+
+\begin{DoxyReturn}{Returns}
+success status of the function 
+\end{DoxyReturn}
+\hypertarget{class_linked_queue_a8a9f1695afe195c794fa070452b5793a}{\index{Linked\-Queue@{Linked\-Queue}!Is\-Empty@{Is\-Empty}}
+\index{Is\-Empty@{Is\-Empty}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{Is\-Empty}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ bool {\bf Linked\-Queue}$<$ Item\-Type $>$\-::Is\-Empty (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_linked_queue_a8a9f1695afe195c794fa070452b5793a}
+Adds new element into the queue
+
+\begin{DoxyReturn}{Returns}
+success status of function 
+\end{DoxyReturn}
+\hypertarget{class_linked_queue_adec4e9cd2e4e8e31c072fecb7ed76334}{\index{Linked\-Queue@{Linked\-Queue}!Peek\-Front@{Peek\-Front}}
+\index{Peek\-Front@{Peek\-Front}!LinkedQueue@{Linked\-Queue}}
+\subsubsection[{Peek\-Front}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ Item\-Type $\ast$ {\bf Linked\-Queue}$<$ Item\-Type $>$\-::Peek\-Front (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_queue_adec4e9cd2e4e8e31c072fecb7ed76334}
+Returns the number of elements in the queue
+
+\begin{DoxyReturn}{Returns}
+the size of the queue 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+Linked\-Queue.\-hh\end{DoxyCompactItemize}

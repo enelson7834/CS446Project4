@@ -1,8 +1,18 @@
+/**
+@file ConfigFileInput.hh
+@author Eugene Nelson
+@breif The header file for the ConfigFileInput class.
+@version    1.0 Eugene Nelson
+            Originally developed ( 9 - 19 - 17 )
+*/
+
 #include "ConfigFileInput.hh"
 
+/////////////////////////////////////////////////////////////////////////////
+// Constructors/Deconstructors
+/////////////////////////////////////////////////////////////////////////////
 ConfigFileInput::ConfigFileInput( char* fileName )
 {
-
     aLogOutputSpecification = 'E';
 
     aListOfProcesses = new LinkedList<ConfigFileInputNode>;
@@ -28,6 +38,8 @@ ConfigFileInput::ConfigFileInput( char* fileName )
         strcpy( aFilePath, "None" );
         aLogOutputSpecification = 'E';
         strcpy( aLogFilePath, "None" );
+        fin.close( );
+        return;
     } 
     else
     {
@@ -44,7 +56,7 @@ ConfigFileInput::ConfigFileInput( char* fileName )
     }
 
     fin.close();
-}
+} // end Default Constructor
 
 ConfigFileInput::ConfigFileInput( const ConfigFileInput& copyInput )
 {
@@ -52,52 +64,78 @@ ConfigFileInput::ConfigFileInput( const ConfigFileInput& copyInput )
     aLogOutputSpecification = copyInput.aLogOutputSpecification;
     strcpy( aLogFilePath, copyInput.aLogFilePath );
     aListOfProcesses = new LinkedList<ConfigFileInputNode>
-                                        ( ( copyInput.aListOfProcesses ) );
-}
+                                        ( *(copyInput.aListOfProcesses) );
+} // end Copy Constructor
 
 ConfigFileInput::~ConfigFileInput( )
 {
     delete aListOfProcesses;
-}
+} // end Deconstructor
+/////////////////////////////////////////////////////////////////////////////
+
 int ConfigFileInput::GetNumberOfProcesses( )
 {
     return aListOfProcesses->GetLength( );
-}
+} // end GetNumberOfProcesses
 
+/**<
+Searches for the specified process name in the list of processes to get it's
+value
+Simply searches through the list to find the position of the process we are
+looking for and uses that position to get the value.
+
+@pre    None.
+@post   The value of the process with the given name is returned.
+@param  processName The name of the process to search for.
+@return The value of the specified process.
+****************************************************************************/
 int ConfigFileInput::GetProcessValue( const char processName[ ] )
 {
-    int position = 0;
+    int position = 1;
     while( strcmp( processName, 
-            aListOfProcesses->GetEntry( position ).GetProcessName( ) ) != 0
+            aListOfProcesses->GetEntry( position )->GetProcessName( ) ) != 0
             && position < aListOfProcesses->GetLength( ) )
     {
         ++position;
     }
 
-    if( position >= aListOfProcesses->GetLength( ) )
+    if( position > aListOfProcesses->GetLength( ) )
     {
         return -1;
     }
-    return aListOfProcesses->GetEntry( position ).GetProcessValue( );
-}
+    return aListOfProcesses->GetEntry( position )->GetProcessValue( );
+} // end GetProcessValue
+
 char* ConfigFileInput::GetProcessName( const int position )
 {
-    return aListOfProcesses->GetEntry( position ).GetProcessName( );
-}
+    return aListOfProcesses->GetEntry( position )->GetProcessName( );
+} // end GetProcessName
 
 char ConfigFileInput::GetLogOutputSpecification( )
 {
     return aLogOutputSpecification;
-}
+} // endGetLogOutputSpecification
+
 char* ConfigFileInput::GetFilePath( )
 {
     return aFilePath;
-}
+} // end GetFilePath
+
 char* ConfigFileInput::GetLogFilePath( )
 {
     return aLogFilePath;
-}
+} // ennd GetLogFilePath
 
+/**<
+Helper function that parses the lines in the config file and stores the 
+relevent information.
+
+@pre    None.
+@post   The line will be parsed through and the tokens will be extracted
+        and saved in the nodes in the list.
+@param  lineToParse The line to parse through.
+@return The status of the parse line function.
+****************************************************************************/
 bool ConfigFileInput::ParseLine( char lineToParse[ ] )
 {
     if( strncmp( lineToParse, "\n", 1 ) == 0 )
@@ -134,6 +172,9 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
 
         return true;
     }
+
+    // Retrieve the log specification and check for errors
+    /////////////////////////////////////////////////////////////////////////
     else if( strncmp( lineToParse, "Log:", 4 ) == 0 )
     {
         if( aLogOutputSpecification != 'E' )
@@ -176,7 +217,10 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         }
 
         return true;
-    }
+    } // end retrieve log output specification
+
+    // Retrieve the log file path and check for errors
+    /////////////////////////////////////////////////////////////////////////
     else if( strncmp( lineToParse, "Log File Path:", 14 ) == 0 )
     {
         char tempFileName[ STR_MAX_LENGTH ];
@@ -205,11 +249,14 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         strcpy( aLogFilePath, tempFileName ); 
 
         return true;
-    }
+    } // end getting the file path
     else if( strncmp( lineToParse, "End Sim", 7 ) == 0 )
     {
         return true;
     }
+
+    // Retrieve the tokens from process specifications
+    /////////////////////////////////////////////////////////////////////////
     else
     {
         char tempProcessName[ 30 ] = {'\0'};
@@ -218,11 +265,8 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         char* tempNameToken;
 
         tempValueToken = strpbrk( lineToParse, ":" );
-        for( unsigned int i = 0; i < strlen( tempValueToken ) - 2; i++ )
-        {
-            tempValueToken[ i ] = tempValueToken[ i + 2 ];
-        }
-        tempValueToken[ strlen( tempValueToken ) - 2 ] = '\0';
+        RemoveSpaces( tempValueToken );
+        AdjustLineElements( tempValueToken , 0 );
         tempProcessValue = atoi( tempValueToken );
 
         tempNameToken = strtok( lineToParse, " :;" );
@@ -241,6 +285,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
                 if( goodToCut == 2 )
                 {
                     tempProcessName[ i ] = '\0';
+                    goodToCut++;
                 } 
                 else
                 {
@@ -253,11 +298,61 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         {
            tempProcessName[ i ] = tolower( tempProcessName[ i ] );
         }
-        
+
         ConfigFileInputNode tempNode( tempProcessName, tempProcessValue );
 
-        aListOfProcesses->InsertEntry(  aListOfProcesses->GetLength( ), 
-                                        tempNode );
+        aListOfProcesses->InsertEntry( 1, tempNode );
+
         return true;
+    } // end getting tokens
+} // end ParseLine
+
+/**<
+Helper function to make parsing easier
+
+@pre    None.
+@post   The specified string will have all space characters removed.
+@param  lineToRemoveSpaces The string who's spaces will be removed.
+@return void
+****************************************************************************/
+void ConfigFileInput::RemoveSpaces( char lineToRemoveSpaces[ ] )
+{
+    for( int i = 0; i < ( int ) strlen( lineToRemoveSpaces ); i++ )
+    {
+        if( lineToRemoveSpaces[ i ] == '(' )
+        {
+            for( int j = i; j < ( int ) strlen( lineToRemoveSpaces ); j++ )
+            {
+                if( lineToRemoveSpaces[ j ] == ')' )
+                {
+                    i = j;
+                    break;
+                }
+            }
+        }
+        if( lineToRemoveSpaces[ i ] == ' ' )
+        {
+            AdjustLineElements( lineToRemoveSpaces, i );
+        }
     }
-} 
+} // end RemoveSpaces
+
+/**<
+Helper function to make removing spaces easier
+
+@pre    None.
+@post   The specified string will have all leading characters from the
+        position specified moved back one space.
+@param  lineToAdjust The line that will be adjusted.
+@param  positionToAdjust The position in the string to which we are
+        adjusting.
+@return void
+****************************************************************************/
+void ConfigFileInput::AdjustLineElements(  char lineToAdjust[ ], 
+                                        int positionToAdjust )
+{
+    for( int i = positionToAdjust; i < ( int ) strlen( lineToAdjust ); i++ )
+    {
+        lineToAdjust[ i ] = lineToAdjust[ i + 1 ];
+    }
+} // end AdjustLineElements

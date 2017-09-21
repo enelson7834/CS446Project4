@@ -1,125 +1,192 @@
-/** LinkedQueue ADT header file.
-@file LinkedQueue.hh
+/**<
+@file LinkedQueue.h
+
+@brief Implaments the linked queue class and all member functions
+
 @author Eugene Nelson
-@date 9/17/17
-@version 1.0 (Eugene Nelson 9/17/17)
 
-Header file for the LinkedQueue ADT. Describes the memeber functions of the
-LinkedQueue ADT and their paramaters/functions.*/
+@version    1.0 Eugene Nelson
+        Originally developed ( 11 - 14 - 16 )
+*/
+/////////////////////////////////////////////////////////////////////////////
+// PRECOMPILER DIRECTIVES 
+/////////////////////////////////////////////////////////////////////////////
+#ifndef LINKED_QUEUE_H
+#define LINKED_QUEUE_H
 
-#ifndef linked_queue_h
-#define linked_queue_h
-
+/////////////////////////////////////////////////////////////////////////////
+// HEADER FILES
+/////////////////////////////////////////////////////////////////////////////
 #include "Node.hh"
-#include "LinkedList.hh"
 
+/////////////////////////////////////////////////////////////////////////////
+// CLASS DEFINITION 
+/////////////////////////////////////////////////////////////////////////////
 template <class ItemType>
 class LinkedQueue
 {
-	public:
-		        LinkedQueue( );
-		        LinkedQueue( const LinkedQueue<ItemType>& copyList );
-		        ~LinkedQueue( );
-
-        bool    IsEmpty( ) const;
-        int     GetSize( ) const;
-        bool    Enqueue( const ItemType& newEntry );
-        bool    Dequeue( );
+    public: 
+        LinkedQueue();
+        LinkedQueue( const LinkedQueue<ItemType>& source );
+        ~LinkedQueue();
         
-        ItemType    PeekFront( ) const;
-
-	private:
-	    LinkedList<ItemType>* 	apListPtr;
+        bool IsEmpty() const;
+        bool Enqueue( const ItemType& newEntry );
+        bool Dequeue();
+        ItemType* PeekFront();
+        int GetSize();
+    private:
+        Node<ItemType>* front;
+        Node<ItemType>* rear;
+        
+        int size;
 };
 
 /**<
-Default constructor
-*/
+Default constructor for linked queue
+****************************************************************************/
 template <class ItemType>
-LinkedQueue<ItemType>::LinkedQueue( )
-{ 
-    apListPtr = NULL;
-} // end Default Constructor
+LinkedQueue<ItemType>::LinkedQueue()
+{
+    front = NULL;
+    rear = NULL;
+    
+    size = 0;
+}
 
 /**<
-Copy Constructor
-*/
+Copy constructor for Linked queue class
+****************************************************************************/
 template <class ItemType>
-LinkedQueue<ItemType>::LinkedQueue( const LinkedQueue<ItemType>& copyQueue )
+LinkedQueue<ItemType>::LinkedQueue( const LinkedQueue<ItemType>& source )
 {
-    apListPtr = new LinkedList<ItemType>( *( copyQueue.apListPtr ) );
-} // end Copy Constructor
+    size = source.size;
+    Node<ItemType>* temp = source.front;
+    
+    while( temp != NULL )
+    {
+        Enqueue( *( temp->getData() ) );
+        temp = temp->getNext();
+    }
+    temp = NULL;
+}
 
 /**<
-Deconstructor
-*/
+Deconstructor for linked queue class
+****************************************************************************/
 template <class ItemType>
-LinkedQueue<ItemType>::~LinkedQueue( )
+LinkedQueue<ItemType>::~LinkedQueue()
 {
-    delete apListPtr;
-} // end Deconstructor
-
-/**< 
-Checks to see if the queue is empty.
-
-@return True if queue is empty. False otherwise.
-*/
-template <class ItemType>
-bool LinkedQueue<ItemType>::IsEmpty( ) const
-{
-    return apListPtr->IsEmpty();
-} // end IsEmpty
+    while( !IsEmpty() )
+    {
+        Dequeue();
+    }
+    size = 0;
+}
 
 /**<
-Gets the number of entries currently in the queue.
+Checks if linked queue is empty
 
-@return The integer number of entries in the queue.
-*/
+@return succes status of function
+****************************************************************************/
 template <class ItemType>
-int LinkedQueue<ItemType>::GetSize( ) const
+bool LinkedQueue<ItemType>::IsEmpty() const
 {
-    return apListPtr->getLength( );
-} // end GetSize
-
+    if( front == NULL && rear == NULL )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 /**<
-Enqueue a value to the back of the queue.
+Adds new element into the queue
 
-@pre None.
-@post New entry will be inserted into the queue at the end of the queue.
-@param newEntry The new entry to be inserted into the queue.
-@return True if entry was successfully added. False otherwise.
-*/
+@return success status of function
+****************************************************************************/
 template <class ItemType>
 bool LinkedQueue<ItemType>::Enqueue( const ItemType& newEntry )
 {
-    return apListPtr->InsertEntry( apListPtr->GetLength( ), newEntry );
-} // end Enqueue
+    if( IsEmpty() )
+    {
+        Node<ItemType>* temp = new Node<ItemType>( newEntry, NULL );
+        front = rear = temp;
+        temp = NULL;
+    }
+    else
+    {
+        Node<ItemType>* temp = new Node<ItemType>( newEntry, NULL );
+        rear->setNext( temp );
+        rear = temp;
+        temp = NULL;
+    }
+    
+    size++;
+    
+    return true;
+}
 
 /**<
-Removes the entry at the given position from the queue.
+Removes an element from the front of the queue
 
-@pre None.
-@post Removes the element from the front of the queue.
-@return True if the removal was successful. False otherwise.
-*/
+@return success status of the function
+****************************************************************************/
 template <class ItemType>
-bool LinkedQueue<ItemType>::Dequeue( )
+bool LinkedQueue<ItemType>::Dequeue()
 {
-    return apListPtr->RemoveEntry( 0 );
-} // end Dequeue
+    if( IsEmpty() )
+    {
+        return false;
+    }
+    else if( rear == front )
+    {
+        delete front;
+        front = rear = NULL;
+        size = 0;
+        
+        return true;
+    }
+    else
+    {
+        Node<ItemType>* temp = front;
+        front = front->getNext();
+        delete temp;
+        temp = NULL;
+        
+        size--;
+        
+        return true;
+    }
+}
 
 /**<
-Gets value at the front of the queue.
+Peeks at the front element of the queue
 
-@pre Queue is not empty.
-@post The entry at the front will be returned.
-@return The entry at the given position.
-*/
+@return poiner to element at front of queue
+****************************************************************************/
 template <class ItemType>
-ItemType LinkedQueue<ItemType>::PeekFront( ) const
+ItemType* LinkedQueue<ItemType>::PeekFront()
 {
-    return apListPtr->GetEntry( 0 );
-} // end PeekFront
+    if( IsEmpty() )
+    {
+        return NULL;
+    }
+    
+    return front->getData();
+}
+
+/**<
+Returns the number of elements in the queue
+
+@return the size of the queue
+****************************************************************************/
+template <class ItemType>
+int LinkedQueue<ItemType>::GetSize()
+{
+    return size;
+}
 
 #endif

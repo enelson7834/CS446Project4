@@ -1,0 +1,238 @@
+\hypertarget{class_meta_data_info}{\section{Meta\-Data\-Info Class Reference}
+\label{class_meta_data_info}\index{Meta\-Data\-Info@{Meta\-Data\-Info}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_meta_data_info_af98d5c5b43cd3bcd86438554ea91751e}{{\bfseries Meta\-Data\-Info} (char $\ast$file\-Name)}\label{class_meta_data_info_af98d5c5b43cd3bcd86438554ea91751e}
+
+\item 
+void \hyperlink{class_meta_data_info_a22aac63a00cbf47e5cdbc8bc10cf3ac8}{Process\-Data} (\hyperlink{class_config_file_input}{Config\-File\-Input} \&config\-File)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_meta_data_info_a56a4ddcd4429a6324c7715e8deb199f1}{Parse\-Line} (char line\-To\-Parse\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{class_meta_data_info_a525056e90a718a3f42147b0ec8c9456a}{Remove\-Spaces} (char line\-To\-Remove\-Spaces\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{class_meta_data_info_ad22e892de632d1d0800099e7daf7c941}{Adjust\-Line\-Elements} (char line\-To\-Adjust\mbox{[}$\,$\mbox{]}, int position\-To\-Adjust)
+\item 
+void \hyperlink{class_meta_data_info_a5bc8f03132a3a575433517cc1de3295d}{Process\-Error\-Code} (char log\-Specification, char error\-Code, ofstream \&log\-File)
+\item 
+\hypertarget{class_meta_data_info_a6150ce3a4dd26ea2326eb838ef9fef6f}{void {\bfseries Log\-Output} (char log\-Specification, char $\ast$log\-Message, ofstream \&log\-File)}\label{class_meta_data_info_a6150ce3a4dd26ea2326eb838ef9fef6f}
+
+\item 
+void \hyperlink{class_meta_data_info_a860a5bbc2b79a2c8fe5fa83bae3bb7f1}{itoa} (int input\-Value, char $\ast$output\-String, int base)
+\item 
+void \hyperlink{class_meta_data_info_a03d279a6dc693da0099cf016541b34eb}{Reverse\-String} (char $\ast$string, int size)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_meta_data_info_ad22e892de632d1d0800099e7daf7c941}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!Adjust\-Line\-Elements@{Adjust\-Line\-Elements}}
+\index{Adjust\-Line\-Elements@{Adjust\-Line\-Elements}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{Adjust\-Line\-Elements}]{\setlength{\rightskip}{0pt plus 5cm}void Meta\-Data\-Info\-::\-Adjust\-Line\-Elements (
+\begin{DoxyParamCaption}
+\item[{char}]{line\-To\-Adjust\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{position\-To\-Adjust}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_meta_data_info_ad22e892de632d1d0800099e7daf7c941}
+$<$ Helper function to make removing spaces easier
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The specified string will have all leading characters from the position specified moved back one space. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em line\-To\-Adjust} & The line that will be adjusted. \\
+\hline
+{\em position\-To\-Adjust} & The position in the string to which we are adjusting. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_meta_data_info_a860a5bbc2b79a2c8fe5fa83bae3bb7f1}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!itoa@{itoa}}
+\index{itoa@{itoa}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{itoa}]{\setlength{\rightskip}{0pt plus 5cm}void Meta\-Data\-Info\-::itoa (
+\begin{DoxyParamCaption}
+\item[{int}]{input\-Value, }
+\item[{char $\ast$}]{output\-String, }
+\item[{int}]{base}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_meta_data_info_a860a5bbc2b79a2c8fe5fa83bae3bb7f1}
+$<$ Helper function to convert from an integer to a string
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The integer value passed into the function will be converted into a string representation to make logging easier. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em input\-Value} & The integer value that will be converted to a string. \\
+\hline
+{\em ouput\-String} & The string where the converted value will be stored. \\
+\hline
+{\em base} & The base to convert to. i.\-e. 10 = decimal, 16 = hexadecimal. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_meta_data_info_a56a4ddcd4429a6324c7715e8deb199f1}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!Parse\-Line@{Parse\-Line}}
+\index{Parse\-Line@{Parse\-Line}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{Parse\-Line}]{\setlength{\rightskip}{0pt plus 5cm}bool Meta\-Data\-Info\-::\-Parse\-Line (
+\begin{DoxyParamCaption}
+\item[{char}]{line\-To\-Parse\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_meta_data_info_a56a4ddcd4429a6324c7715e8deb199f1}
+$<$ Parses the line from Meta Data and stores the tokens in nodes in the queue
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+Meta Data line will be parsed and all important information will be stored in nodes within the queue of processes to be simulated later. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em line\-To\-Parse} & The line from the Meta\-Data file that will be parsed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The status of the parse, indicating errors in the parsing process. 
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Will also set error codes for any potentially troublesome processes so that they may be delt with later, without crashing the program. 
+\end{DoxyNote}
+\hypertarget{class_meta_data_info_a22aac63a00cbf47e5cdbc8bc10cf3ac8}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!Process\-Data@{Process\-Data}}
+\index{Process\-Data@{Process\-Data}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{Process\-Data}]{\setlength{\rightskip}{0pt plus 5cm}void Meta\-Data\-Info\-::\-Process\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf Config\-File\-Input} \&}]{config\-File}
+\end{DoxyParamCaption}
+)}}\label{class_meta_data_info_a22aac63a00cbf47e5cdbc8bc10cf3ac8}
+$<$ Processes the data from the Meta Data file and logs it to appropriate output
+
+\begin{DoxyPrecond}{Precondition}
+Config\-File has all necessary information to process. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+Simulation will have been run and output logged to appropriate outlets. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em config\-File} & The configuration file with necessary info to preform the simulation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_meta_data_info_a5bc8f03132a3a575433517cc1de3295d}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!Process\-Error\-Code@{Process\-Error\-Code}}
+\index{Process\-Error\-Code@{Process\-Error\-Code}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{Process\-Error\-Code}]{\setlength{\rightskip}{0pt plus 5cm}void Meta\-Data\-Info\-::\-Process\-Error\-Code (
+\begin{DoxyParamCaption}
+\item[{char}]{log\-Specification, }
+\item[{char}]{error\-Code, }
+\item[{ofstream \&}]{log\-File}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_meta_data_info_a5bc8f03132a3a575433517cc1de3295d}
+$<$ Helper function make dealing with errors easier
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The specified error code will be handled and logged appropriately. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em log\-Specification} & The specification code indicating where to log error. \\
+\hline
+{\em error\-Code} & The code that needs to be handled. \\
+\hline
+{\em log\-File} & The file where the error will be logged if specified to log to file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void Helper function to make logging messages easier
+\end{DoxyReturn}
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The message to be logged will be logged to the appropriate destinations. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em log\-Specification} & The specification code indicating where to log error. \\
+\hline
+{\em log\-Message} & The message that needs to be logged. \\
+\hline
+{\em log\-File} & The file where the error will be logged if specified to log to file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_meta_data_info_a525056e90a718a3f42147b0ec8c9456a}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!Remove\-Spaces@{Remove\-Spaces}}
+\index{Remove\-Spaces@{Remove\-Spaces}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{Remove\-Spaces}]{\setlength{\rightskip}{0pt plus 5cm}void Meta\-Data\-Info\-::\-Remove\-Spaces (
+\begin{DoxyParamCaption}
+\item[{char}]{line\-To\-Remove\-Spaces\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_meta_data_info_a525056e90a718a3f42147b0ec8c9456a}
+$<$ Helper function to make parsing easier
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The specified string will have all space characters removed. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em line\-To\-Remove\-Spaces} & The string who's spaces will be removed. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_meta_data_info_a03d279a6dc693da0099cf016541b34eb}{\index{Meta\-Data\-Info@{Meta\-Data\-Info}!Reverse\-String@{Reverse\-String}}
+\index{Reverse\-String@{Reverse\-String}!MetaDataInfo@{Meta\-Data\-Info}}
+\subsubsection[{Reverse\-String}]{\setlength{\rightskip}{0pt plus 5cm}void Meta\-Data\-Info\-::\-Reverse\-String (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{string, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_meta_data_info_a03d279a6dc693da0099cf016541b34eb}
+$<$ Helper function to make converting from int to string easier.
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The string passed in will be reversed. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em string} & The string to be reversed. \\
+\hline
+{\em size} & The size of the string passed in. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_meta_data_info_8hh}{Meta\-Data\-Info.\-hh}\item 
+\hyperlink{_meta_data_info_8cc}{Meta\-Data\-Info.\-cc}\end{DoxyCompactItemize}

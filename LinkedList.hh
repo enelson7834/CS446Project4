@@ -1,263 +1,322 @@
-/** LinkedList ADT header file.
-@file LinkedList.hh
+/**
+@file LinkedList.h
 @author Eugene Nelson
-@date 9/17/17
-@version 1.0 (Eugene Nelson 9/17/17)
+@breif The header/implamentation file for the Linked LinkedList class
+@version    1.1 Eugene Nelon ( 9 - 20 - 17 )
 
-Header file for the LinkedList ADT. Describes the memeber functions of the
-LinkedList ADT and their paramaters/functions.*/
+            1.0 Eugene Nelson
+            Originally developed ( 10 - 15 - 16 )
+*/
+/////////////////////////////////////////////////////////////////////////////
+// Precompiler Directives 
+/////////////////////////////////////////////////////////////////////////////
+#ifndef linked_list_hh
+#define linked_list_hh
 
-#ifndef linked_list_h
-#define linked_list_h
-
+/////////////////////////////////////////////////////////////////////////////
+// Header files 
+/////////////////////////////////////////////////////////////////////////////
+#include <iostream>
 #include "Node.hh"
 
+/////////////////////////////////////////////////////////////////////////////
+// Class Definition
+/////////////////////////////////////////////////////////////////////////////
 template <class ItemType>
 class LinkedList
-{
+{     
     public:
-       	        LinkedList();
-       	        LinkedList(const LinkedList<ItemType>& copyList);
-       	        ~LinkedList();
-
-        bool    IsEmpty() const;
-        int     GetLength() const;
-
-        bool    InsertEntry(const int newPosition, const ItemType& newEntry);
-        bool    RemoveEntry(const int position);
-        void    Clear();
-        bool    SetEntry(int position, const ItemType& newEntry);
+        LinkedList();
+        LinkedList( LinkedList<ItemType>& Source );
+        ~LinkedList();
         
-        ItemType    GetEntry(int position) const;
+        bool IsEmpty();
+        bool IsFull();
+        int GetLength();
+        
+        bool RemoveEntry( int Position );
+        void Clear();
+        bool InsertEntry( int Position, const ItemType& Data );
+        bool push( const ItemType& Data );
+        bool pop();
+        ItemType* GetEntry( int Position );
+        
+        void print();
 
-	private:
-	    Node<ItemType>* 	apHead;
-	    int 				aItemCount;
-};
+        
+    private:
+        Node<ItemType>* Head;
+        int Size;
+}; //end LinkedList
+
 /**<
-Default Constructor
-*/
+Default constructor for LinkedList
+****************************************************************************/
 template <class ItemType>
 LinkedList<ItemType>::LinkedList()
 {
-	apHead = NULL;
-	aItemCount = 0;
-} // end Default Constructor
+    Head = NULL;
+    Size = 0;
+} // end constructor
 
 /**<
-Copy Constructor
-*/
+Copy constructor for list
+****************************************************************************/
 template <class ItemType>
-LinkedList<ItemType>::LinkedList( const LinkedList<ItemType>& copyList )
+LinkedList<ItemType>::LinkedList( LinkedList& Source )
 {
-    this->aItemCount = 0;
-    if( copyList.IsEmpty( ) )
+    if( Source.IsEmpty() )
     {
-        this->apHead = NULL;
+        Head = NULL;
+        Size = 0;
     }
     else
     {
-        for( int position = 0; position < copyList.aItemCount; ++position )
+        for( int i = 1; i <= Source.Size; i++ )
         {
-            this->InsertEntry( position, copyList.GetEntry( position ) );
+            InsertEntry( i, *(Source.GetEntry( i )) );
         }
     }
-} // end Copy Constructor
+} // end copy constructor
 
 /**<
-Deconstructor
-*/
+Deconstructor for LinkedList
+****************************************************************************/
 template <class ItemType>
-LinkedList<ItemType>::~LinkedList(  )     
-{ 
-    this->Clear(  ); 
-} // end Deconstructor
-
-/**<
-Checks to see if the list is empty.
-
-@return True if list is empty. False otherwise.
-*/		
-template <class ItemType>
-bool LinkedList<ItemType>::IsEmpty() const
+LinkedList<ItemType>::~LinkedList()
 {
-	if( aItemCount <= 0 && apHead == NULL )
-	{
-		return true;
-	} 
+    Clear();
+} // end deconstructor
 
-	return false;
+/**<
+Checks if the list is empty
+@return Success value of function
+****************************************************************************/
+template <class ItemType>
+bool LinkedList<ItemType>::IsEmpty()
+{
+    if( Head == NULL && Size == 0 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 } // end IsEmpty
 
 /**<
-Gets the number of entries currently in the list.
-
-@return The integer number of entries in the list.
-*/
+Checks if the list is full
+@return Always returns false as linked lists do not have max size
+****************************************************************************/
 template <class ItemType>
-int LinkedList<ItemType>::GetLength() const
+bool LinkedList<ItemType>::IsFull()
 {
-	return aItemCount;
+    return false;
+} // end IsFull
+
+/**<
+Returns the size of the LinkedList
+@returns Number of elements in the list
+****************************************************************************/
+template <class ItemType>
+int LinkedList<ItemType>::GetLength()
+{
+    return Size;
 } // end GetLength
 
 /**<
-Insert entry into list at the a given position.
-
-@pre None.
-@post New entry will be inserted into the list at the given position, moving
-the current entry at that position and all following entries forward in the
-list.
-@param newPosition The position where the new entry will be inserted.
-@param newEntry The new entry to be inserted into the list.
-@return True if entry was successfully added. False otherwise.
-@note Position starts at 0 and goes to ItemCount -1.
-*/
+Removes an element at specified position
+@return Returns the Success value for the function
+@param  Position The position at which it is desired that an element be
+        removed.
+@post Element will be deleted from specified position
+****************************************************************************/
 template <class ItemType>
-bool LinkedList<ItemType>::InsertEntry( const int newPosition, 
-                                        const ItemType& newEntry )
+bool LinkedList<ItemType>::RemoveEntry( int Position )
 {
-    if( newPosition > aItemCount || newPosition < 0 ) 
+    if( Position > ( Size )  )    
     {
         return false;
     }
-    if( this->IsEmpty(  ) )
+    if( Position < 1 )
     {
-        apHead = new Node<ItemType>( newEntry, NULL );
+        return false;
     }
-    else if( newPosition == 0 )
+    if( IsEmpty() )
     {
-        Node<ItemType>* temp = new Node<ItemType>( newEntry, apHead );
-        apHead = temp;
-        temp = NULL;
+        return false;
+    }
+
+    Node<ItemType>* temp = Head->getNext();
+    Node<ItemType>* temp2 = Head;
+    
+    for( int i = 1; i < Position; i++ )
+    {
+        temp = temp->getNext();
+        temp2 = temp2->getNext();
+    }
+    
+    if( Position == 1 )
+    {
+        Head = Head->getNext();
+        delete temp2;
+    }
+    else if( temp == NULL )
+    {
+        temp2->setNext( temp );
+        delete temp;
     }
     else
     {
-        Node<ItemType>* cursor = apHead;
-        for( int i = 0; i < newPosition - 1; ++i )
-        {
-            cursor = cursor->GetNext(  );
-        }
-        
-        Node<ItemType>* temp = new Node<ItemType>( newEntry, 
-                                                        cursor->GetNext( ) );
-        cursor->SetNext( temp );
-
-        temp = NULL;
-        cursor = NULL;
+        temp2->setNext( temp->getNext() );
+        delete temp;
     }
-
-    ++aItemCount;
-    return true;
-} // end InsertEntry
-
-/**<
-Removes the entry at the given position from the list.
-
-@pre None.
-@post Removes node at given position and relinks the list. If the entry to be
-removed was the first entry, then the head pointer is adjusted.
-@param position The position in the list where the removal will occur.
-@return True if the removal was successful. False otherwise.
-*/
-template <class ItemType>
-bool LinkedList<ItemType>::RemoveEntry( const int position )
-{
-    if( this->IsEmpty(  ) ) 
+    
+    Size--;
+    if( Size == 0 )
     {
-        return false;
+       Head = NULL;
     }
-    if( position >= aItemCount || position < 0 )
-    {
-        return false;
-    }
-
-    Node<ItemType>* cursor = apHead;
-    if( position == 0 )
-    {
-        apHead = apHead->GetNext(  );
-    } 
-    else
-    {
-        for( int i = 0; i < position - 1; ++i )
-        {
-            cursor = cursor->GetNext(  );
-        }
-
-        Node<ItemType>* temp = cursor;
-        cursor = cursor->GetNext( );
-
-        temp->SetNext( cursor->GetNext( ) );
-        temp = NULL;
-    }
-
-    delete cursor;
-    cursor = NULL;
-    --aItemCount;
+    
     return true;
 } // end RemoveEntry
 
 /**<
-Removes all of the entries in the list.
-
-@post The list will be emptied and private values are adjusted as necessary.
-*/
+Clears the list
+@return void
+@pre RemoveEntry and IsEmpty functions are working properly
+****************************************************************************/
 template <class ItemType>
-void LinkedList<ItemType>::Clear(  )
+void LinkedList<ItemType>::Clear()
 {
-    while( !this->IsEmpty(  ) )
+    while( !IsEmpty() )
     {
-        this->RemoveEntry( 0 );
+        RemoveEntry(1);
     }
-    aItemCount = 0;
 } // end Clear
 
 /**<
-Gets value of entry at a given position in the list.
-
-@pre 0 < position <= getLength()
-@post The entry at postition will be returned.
-@param position The position of the entry to be returned.
-@return The entry at the given position.
-*/
+Inserts a new element at specified position
+@return The success value of the function
+@param Position The position where the element will be InsertEntryed
+@param Data The data that will be InsertEntryed
+****************************************************************************/
 template <class ItemType>
-ItemType LinkedList<ItemType>::GetEntry( int position ) const
+bool LinkedList<ItemType>::InsertEntry( int Position, const ItemType& Data )
 {
-    if( this->IsEmpty(  ) ) return ItemType(  );
-    if( position >= aItemCount || position < 0 ) return ItemType(  );
-    
-    Node<ItemType>* cursor = apHead;
-    for( int i = 0; i < position; ++i )
+    if( Position > ( Size + 1 ) || Position < 1 )    
     {
-        cursor = cursor->GetNext(  );
+        return false;
     }
-
-    return cursor->GetItem( );
-}
+    
+    if( IsEmpty() )
+    {
+        Head = new Node<ItemType>( Data, NULL );
+    }
+    else if( Position == 1 )
+    {
+        Node<ItemType>* temp = new Node<ItemType>( Data, Head );
+        Head = temp;
+        temp = NULL;
+    }
+    else
+    {
+        Node<ItemType>* temp = Head;
+        for( int i = 1; i < Position - 1; i++ )
+        {
+            temp = temp->getNext();
+        }
+        
+        Node<ItemType>* temp2 = new Node<ItemType>( Data, temp->getNext() );
+        temp->setNext( temp2 );
+        
+        temp2 = NULL;
+        temp = NULL;
+    }
+   
+    
+    Size++;
+    return true;
+} // end InsertEntry
 
 /**<
-Replaces an entry at given position.
-
-@pre 0 < position <= getLength():
-@post The entry at the given position will be replaced.
-@param position The position of the element to be replaced.
-@param newEntry The replacement entry.
-@return True if the entry has been replaced. False otherwise.
-*/
+Pushes value onto the end of the list
+@return The success value of the function
+@param Data The data that will be pushed
+****************************************************************************/
 template <class ItemType>
-bool LinkedList<ItemType>::SetEntry( int position, const ItemType& newEntry )
+bool LinkedList<ItemType>::push( const ItemType& Data )
 {
-    if( this->IsEmpty(  ) ) return false;
-    if( position >= aItemCount || position < 0 ) return false;
+    InsertEntry( Size + 1, Data );
     
-    Node<ItemType>* cursor = apHead;
-    for( int i = 0; i < position; ++i )
-    {
-        cursor = cursor->GetNext(  );
-    }
-
-    cursor->SetItem( newEntry );
-
     return true;
-}
+} // end push
+
+/**<
+Peeks at the data at a specified position
+@return Returns a pointer to the data at specified position
+@param Position The position of where to GetEntry
+****************************************************************************/
+template <class ItemType>
+ItemType* LinkedList<ItemType>::GetEntry( int Position )
+{
+    if( Position > ( Size ) || Position < 1 )    
+    {
+        return NULL;
+    }
+    if( IsEmpty() )
+    {
+        return NULL;
+    }
+    
+    Node<ItemType>* temp = Head;
+    for( int i = 1; i < Position; i++ )
+    {
+        temp = temp->getNext();
+    }
+    
+    return temp->getData();
+} // end GetEntry
+
+/**<
+Pops data off of last element of list
+@return Success value of function
+****************************************************************************/
+template <class ItemType>
+bool LinkedList<ItemType>::pop()
+{
+    if( IsEmpty() )
+    {
+        return false;
+    }
+    else
+    {
+        RemoveEntry( Size );
+        return true;
+    }
+} // end pop
+
+/**<
+Prints all value in the linked list
+@return void
+****************************************************************************/
+template <class ItemType>
+void LinkedList<ItemType>::print()
+{
+    if( IsEmpty() )
+    {
+        ;
+    }
+    else
+    {
+        for( int i = 1; i < Size; i++ )
+        {
+            std::cout << *( GetEntry( i ) ) << " -> ";
+        }
+        std::cout << *( GetEntry( Size ) );
+    }
+} // end print
+
 
 #endif

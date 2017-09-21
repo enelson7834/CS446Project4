@@ -1,59 +1,95 @@
-/** Node ADT header file.
+/**
 @file Node.hh
 @author Eugene Nelson
-@date 9/17/17
-@version 1.0 (Eugene Nelson 9/17/17)
+@breif The header/implamentation for the templated Node class
+@version    1.0 Eugene Nelon
+            Originally developed ( 10 - 15 - 16 ) 
+*/
+/////////////////////////////////////////////////////////////////////////////
+// Precompiler Directives 
+/////////////////////////////////////////////////////////////////////////////
+#ifndef node_hh
+#define node_hh
 
-Header file for the Node ADT. Details the memebers and attributes of the Node ADT and their paramaters/functions.*/
-
-#ifndef node_h
-#define node_h
-
+/////////////////////////////////////////////////////////////////////////////
+// Class Definition 
+/////////////////////////////////////////////////////////////////////////////
 template <class ItemType>
 class Node
+{    
+    public:
+        Node( const ItemType& SourceData, Node* NextNode );
+        ~Node();
+
+        ItemType* getData();
+        Node<ItemType>* getNext();
+        void setData( const ItemType& SourceData );
+        void setNext( Node<ItemType>* NextNode );
+        
+    private:
+        ItemType Data;
+        Node* Next;
+}; //end Node
+
+/**<
+Default paramaterized constructor for Node class
+****************************************************************************/
+template <class ItemType>
+Node<ItemType>::Node( const ItemType& SourceData, Node* NextNode )
 {
-	public:
-		/** Constructors and deconstructors.*/
-		Node(const ItemType& anItem)		
-		{ aItem = anItem; apNext = NULL; }
-		
-		Node(const ItemType& anItem, Node* nextNodePointer) 
-		{ aItem = anItem; apNext = nextNodePointer; }
-		
-		~Node()									
-		{  }
+    Data = SourceData;
+    Next = NextNode;
+} // end constructor
 
-		/** Sets the item of the Node.
-		@pre None.
-		@post The item of the Node will be set to the specified value.
-		@param anItem The item that will be set in the Node.*/
-		void SetEntry(const ItemType& anItem)			
-		{ aItem = anItem; }
+/**<
+Deconstructor for Node class
+****************************************************************************/
+template <class ItemType>
+Node<ItemType>::~Node()
+{   
+    ;
+} // end deconstructor
 
-		/** Sets the next pointer of the Node.
-		@pre None.
-		@post The pointer to the next node is set to the specified value.
-		@param nextNodePtr The pointer to the next node that will be used.*/
-		void SetNext(Node<ItemType>* nextNodePtr) 	
-		{ apNext = nextNodePtr; }
+/**<
+Gets the data stored in the node
+@return Returns a pointer to the data stored in Node
+****************************************************************************/
+template <class ItemType>
+ItemType* Node<ItemType>::getData()
+{
+    return &Data;
+} // end getData
 
-		/** Returns the item in the Node.
-		@pre None.
-		@post Item in Node will be returned.
-		@return The item in the Node.*/
-		ItemType GetItem()			
-		{ return aItem; }
+/**<
+Gets the value of the next pointer in Node
+@return Pointer to next Node
+****************************************************************************/
+template <class ItemType>
+Node<ItemType>* Node<ItemType>::getNext()
+{
+    return Next;
+} // end getNext
 
-		/** Returns the pointer to the next Node.
-		@pre None.
-		@post The pointer to the next Node is returned.
-		@return The pointer to the next Node.*/
-		Node<ItemType>* GetNext()	
-		{ return apNext; }
+/**<
+Sets the data for the Node object
+@return void
+@param SourceData The data that will be used to set the data stored in Node
+****************************************************************************/
+template <class ItemType>
+void Node<ItemType>::setData( const ItemType& SourceData )
+{
+    Data = SourceData;    
+} // end SetData
 
-	private:
-		ItemType			aItem;
-		Node<ItemType>*		apNext;
-};
-
+/**<
+Sets the next Node
+@return void
+@param NextNode The node that will be set as the next Node
+****************************************************************************/
+template <class ItemType>
+void Node<ItemType>::setNext( Node<ItemType>* NextNode )
+{
+    Next = NextNode;
+} // end setNext
+        
 #endif

@@ -1,31 +1,25 @@
 /**<
-Configuration file input nodes.
-
-Nodes will store information from the configuration file and parse
-the config file to retrieve necessary information.
-
 @file ConfigFileInputNode.hh
 @author Eugene Nelson
-@data 9/18/17
-@version 1.0 (Eugene Nelson 9/18/17)
+@detailed   Will be used with the ConfigFileInput class to store the relevant
+            tokens extracted from the file in the list of processes.
+@version 	1.0 Eugene Nelson 
+			Originally Developed ( 9 - 18 - 17 )
 */
 /////////////////////////////////////////////////////////////////////////////
-// File Definitions
+// Precompiler Directives
 /////////////////////////////////////////////////////////////////////////////
-
 #ifndef namespace_config_file_input_node_hh
 #define namespace_config_file_input_node_hh
 
 /////////////////////////////////////////////////////////////////////////////
 // Definitions
 /////////////////////////////////////////////////////////////////////////////
-
 #define STR_MAX_LENGTH 300
 
 /////////////////////////////////////////////////////////////////////////////
 // Header Files
 /////////////////////////////////////////////////////////////////////////////
-
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -33,7 +27,6 @@ the config file to retrieve necessary information.
 /////////////////////////////////////////////////////////////////////////////
 // Class Definitions
 /////////////////////////////////////////////////////////////////////////////
-
 class ConfigFileInputNode
 {
 	public:
@@ -50,6 +43,7 @@ class ConfigFileInputNode
 	    void    SetProcessValue( int newProcessValue );
 	                                    
 	    bool    operator==( const char processName[ ] ) const; 
+	    ConfigFileInputNode operator=( const ConfigFileInputNode& copyNode );
 	    
 	private:
 	    char   aProcessName[ STR_MAX_LENGTH ];

@@ -1,5 +1,16 @@
+/**
+@file MetaDataInfo.cc
+@author Eugene Nelson
+@breif The implamentation file for the MetaDataInfo class.
+@version    1.0 Eugene Nelson
+            Originally developed ( 9 - 19 - 17 )
+*/
+
 #include "MetaDataInfo.hh"
 
+/////////////////////////////////////////////////////////////////////////////
+// Constructors/Deconstructors
+/////////////////////////////////////////////////////////////////////////////
 MetaDataInfo::MetaDataInfo( char* fileName )
 {
     aQueueOfMetaData = new LinkedQueue<MetaDataInfoNode>;
@@ -30,15 +41,29 @@ MetaDataInfo::MetaDataInfo( char* fileName )
         fin.getline( tempLine, 300, '\n' );
     } while( !fin.eof( ) && fileStatus );
 
+    aQueueOfMetaData->Dequeue( );
+
     fin.close();
-}
+} // end Constructor
+
 MetaDataInfo::~MetaDataInfo( )
 {
     delete aQueueOfMetaData;
-}
+} // end Deconstructor
 
-void MetaDataInfo::ProcessData( ConfigFileInput configFile )
+/**<
+Processes the data from the Meta Data file and logs it to appropriate output
+
+@pre ConfigFile has all necessary information to process.
+@post Simulation will have been run and output logged to appropriate outlets.
+@param configFile   The configuration file with necessary info to preform
+                    the simulation.
+@return void
+****************************************************************************/
+void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 {
+    // Variable declarations/initialization
+    /////////////////////////////////////////////////////////////////////////
     char* tempLogFilePath = new char[ 30 ];
     char* tempLogDirectory = new char[ 30 ];
     char* tempLogFilePathPtr;
@@ -77,14 +102,14 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
     char tempProcessName[ 30 ];
     char tempProcessValue[ 5 ];
 
+    // Process the Configuration Data to output to Log
+    /////////////////////////////////////////////////////////////////////////
     strcpy( tempMessage, "Configuration File Data:\n" );
-
     LogOutput( logSpecification, tempMessage, logFile );
-    for( int i = 0; i < configFile.GetNumberOfProcesses( ); i++ )
+    for( int i = 1; i < configFile.GetNumberOfProcesses( ) + 1; i++ )
     {
         tempMessage[ 0 ] = '\0';
         strcpy( tempProcessName, configFile.GetProcessName( i ) );
-        cout << tempProcessName << endl;
         itoa(   configFile.GetProcessValue( tempProcessName ), 
                 tempProcessValue, 10 );
 
@@ -100,7 +125,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
         strcat( tempMessage, " = " );
         strcat( tempMessage, tempProcessValue );
 
-        if( strcmp( tempProcessName, "System" ) == 0 )
+        if( strncmp( tempProcessName, "System", 6 ) == 0 )
         {
             strcat( tempMessage, " kbytes\n" );
         }
@@ -127,16 +152,20 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
     }
 
     strcat( tempMessage, "\n\nMeta-Data Metrics\n" );
-
     LogOutput( logSpecification, tempMessage, logFile ); 
 
+    // More Variable Initializations for processing the Meta Data
+    /////////////////////////////////////////////////////////////////////////
     char* tempToken = new char[ 10 ];
+    char* tempToken2 = new char[ 10 ];
     char tempMetaDataCode = '\0';
     char tempMetaDataDescriptor[ 30 ];
     int tempNumberOfCycles = 0;
     int tempProcessRunTime = 0;
     int tempErrorCode = 0;
 
+    // Begin processing Meta Data
+    /////////////////////////////////////////////////////////////////////////
     while( !aQueueOfMetaData->IsEmpty( ) )
     {
         tempMetaDataCode = '\0';
@@ -144,85 +173,67 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
         tempNumberOfCycles = 0;
         tempProcessRunTime = 0;
         tempErrorCode = 0;
-        tempMessage[ 0 ] = '\0';
 
-        tempMetaDataCode = aQueueOfMetaData->PeekFront( ).GetMetaDataCode( );
+        // Load Meta Data info into buffers
+        /////////////////////////////////////////////////////////////////////
+        tempMetaDataCode = aQueueOfMetaData->PeekFront( )->GetMetaDataCode( );
         strcpy(    tempMetaDataDescriptor, 
-                    aQueueOfMetaData->PeekFront( ).GetMetaDataDescriptor( ) );
+                    aQueueOfMetaData->PeekFront( )->GetMetaDataDescriptor( ) );
         tempNumberOfCycles = aQueueOfMetaData->
-                                            PeekFront( ).GetNumberOfCycles( );
-        tempErrorCode = aQueueOfMetaData->PeekFront( ).GetErrorCode( );
+                                            PeekFront( )->GetNumberOfCycles( );
+        tempErrorCode = aQueueOfMetaData->PeekFront( )->GetErrorCode( );
+
         if( tempErrorCode != 0 )
         {
             ProcessErrorCode( logSpecification, tempErrorCode, logFile );
         }
 
+        // Check that code match with appropriate descriptor and get runtime
+        /////////////////////////////////////////////////////////////////////
         switch( tempMetaDataCode )
         {
             case 'S':
                 if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                    {
                         ;
-                    }
                     else
-                    {
                         tempErrorCode = 51;
-                    }
                 }
                 else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                    {
                         return;
-                    }
                 }
                 else
-                {
                     tempErrorCode = 41;
-                }
 
                 break;
             case 'A':
                 if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                    {
                         ;
-                    }
                     else
-                    {
                         tempErrorCode = 51;
-                    }
                 }
                 else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                    {
                         ;
-                    }
                     else
-                    {
                         tempErrorCode = 51;
-                    }
                 }
                 else
-                {
                     tempErrorCode = 41;
-                }
 
                 break;
             case 'P':
                 if( strcmp( tempMetaDataDescriptor, "run" ) == 0 )
-                {
                     tempProcessRunTime = tempNumberOfCycles * 
                                     configFile.GetProcessValue( "processor" );
-                }
                 else
-                {
                     tempErrorCode = 51;
-                }
 
                 break;
             case 'I':
@@ -230,20 +241,14 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
                 {
                     if( configFile.GetProcessValue( tempMetaDataDescriptor ) 
                         == -1 )
-                    {
                         tempErrorCode = 41;
-                    }
                     else
-                    {
                         tempProcessRunTime = tempNumberOfCycles * 
                                     configFile.
                                     GetProcessValue( tempMetaDataDescriptor );
-                    }
                 }
                 else
-                {
                     tempErrorCode = 41;
-                }
 
                 break;
             case 'O':
@@ -251,49 +256,37 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
                 {
                     if( configFile.GetProcessValue( tempMetaDataDescriptor ) 
                         == -1 )
-                    {
                         tempErrorCode = 41;
-                    }
                     else
-                    {
                         tempProcessRunTime = tempNumberOfCycles * 
                                     configFile.
                                     GetProcessValue( tempMetaDataDescriptor );
-                    }
                 }
                 else
-                {
                     tempErrorCode = 41;
-                }
 
                 break;
             case 'M':
                 if( strcmp( tempMetaDataDescriptor, "block" ) == 0 )
                 {
                     if( tempNumberOfCycles > 0 )
-                    {
-                        ;
-                    }
+                        tempProcessRunTime = tempNumberOfCycles *
+                                    configFile.
+                                    GetProcessValue( "memory" );
                     else
-                    {
                         tempErrorCode = 51;
-                    }
                 }
                 else if( strcmp( tempMetaDataDescriptor, "allocate" ) == 0 )
                 {
                     if( tempNumberOfCycles > 0 )
-                    {
-                        ;
-                    }
+                        tempProcessRunTime = tempNumberOfCycles *
+                                        configFile.
+                                        GetProcessValue( "memory" );
                     else
-                    {
                         tempErrorCode = 51;
-                    }
                 }
                 else
-                {
                     tempErrorCode = 41;
-                }
 
                 break;
             default:
@@ -301,16 +294,22 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
 
         }
 
+        // Prepare the line for the Log output
+        /////////////////////////////////////////////////////////////////////
         if( tempErrorCode == 0 )
         {
             if( tempProcessRunTime > 0 )
             {
                 itoa( tempProcessRunTime, tempToken, 10 );
+                itoa( tempNumberOfCycles, tempToken2, 10 );
 
                 tempMessage[ 0 ] = tempMetaDataCode;
+                tempMessage[ 1 ] = '\0';
                 strcat( tempMessage, "(" );
                 strcat( tempMessage, tempMetaDataDescriptor );
-                strcat( tempMessage, ") - " );
+                strcat( tempMessage, ")" );
+                strcat( tempMessage, tempToken2 );
+                strcat( tempMessage, " - " );
                 strcat( tempMessage, tempToken );
                 strcat( tempMessage, " ms\n" );
 
@@ -326,124 +325,138 @@ void MetaDataInfo::ProcessData( ConfigFileInput configFile )
             ProcessErrorCode( logSpecification, tempErrorCode, logFile );
         }
 
-        tempStorageQueue.Enqueue( aQueueOfMetaData->PeekFront( ) );
+        tempStorageQueue.Enqueue( *( aQueueOfMetaData->PeekFront( ) ) );
         aQueueOfMetaData->Dequeue( );
     }
 
     logFile.close( );
 
+    // Return queue to original state
+    /////////////////////////////////////////////////////////////////////////
     while( !tempStorageQueue.IsEmpty( ) )
     {
-        aQueueOfMetaData->Enqueue( tempStorageQueue.PeekFront( ) );
+        aQueueOfMetaData->Enqueue( *( tempStorageQueue.PeekFront( ) ) );
         tempStorageQueue.Dequeue( ); 
     }
 
     delete tempToken;
-}
+} // End ParseData
 
+/**<
+Parses the line from Meta Data and stores the tokens in nodes in the queue
+
+@pre None.
+@post   Meta Data line will be parsed and all important information will be
+        stored in nodes within the queue of processes to be simulated later.
+@param lineToParse  The line from the MetaData file that will be parsed
+@return The status of the parse, indicating errors in the parsing process.
+@note   Will also set error codes for any potentially troublesome processes
+        so that they may be delt with later, without crashing the program.
+****************************************************************************/
 bool MetaDataInfo::ParseLine( char lineToParse[ ] )
 {
-    if( strncmp( lineToParse, "Start", 5 ) )
-    {
-        return true;
-    }
-    else if( strncmp( lineToParse, "End", 3 ) )
-    {
-        return true;
-    }
-    else
-    {
-        char tempHelper[ 300 ] = {'\0'};
-        char* tempHelperPtr = new char[ 300 ];
-        char* tempHelperPtrAnchor = tempHelperPtr;
-        char tempMetaDataCode = '\0';
-        char tempMetaDataDescriptor[ 30 ] = {'\0'};
-        int tempNumberOfCycles = -1;
-        int tempErrorCode = 0;
-        MetaDataInfoNode tempNode;
+    // Variable declarations/initialization
+    /////////////////////////////////////////////////////////////////////////
+    char tempHelper[ 300 ] = {'\0'};
+    char* tempHelperPtr = new char[ 300 ];
+    char* tempHelperPtrAnchor = tempHelperPtr;
+    char tempMetaDataCode = '\0';
+    char tempMetaDataDescriptor[ 30 ] = {'\0'};
+    int tempNumberOfCycles = -1;
+    int tempErrorCode = 0;
+    MetaDataInfoNode tempNode;
 
-        RemoveSpaces( lineToParse );
-        strcpy( tempHelper, lineToParse );
-        strcpy( tempHelperPtr, tempHelper );
+    RemoveSpaces( lineToParse );
+    strcpy( tempHelper, lineToParse );
+    strcpy( tempHelperPtr, tempHelper );
 
-        int iterator = 0;
-        while( tempHelperPtr != NULL )
+    // Begin parsing the line
+    /////////////////////////////////////////////////////////////////////////
+    int iterator = 0;
+    while( tempHelperPtr != NULL )
+    {
+        tempMetaDataCode = '\0';
+        tempMetaDataDescriptor[ 0 ] = '\0';
+        tempNumberOfCycles = -1;
+        tempErrorCode = 0;
+
+        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
+        tempHelperPtr = strtok( tempHelperPtr, "(" );
+
+        tempMetaDataCode = ( tempHelperPtr[ 0 ] );
+        if( tempMetaDataCode == '\0' )
         {
-            tempMetaDataCode = '\0';
-            tempMetaDataDescriptor[ 0 ] = '\0';
-            tempNumberOfCycles = -1;
-            tempErrorCode = 0;
-
-            tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
-            tempHelperPtr = strtok( tempHelperPtr, "(" );
-
-            tempMetaDataCode = ( tempHelperPtr[ 0 ] );
-            if( tempMetaDataCode == '\0' )
-            {
-                tempErrorCode = 33;
-            }
-            else if( tempMetaDataCode > 'Z' || tempMetaDataCode < 'A' )
-            {
-                tempErrorCode = 32;
-            }
-
-            tempHelperPtr = strtok( NULL, ")" );
-            if( tempHelperPtr == NULL )
-            {
-                tempErrorCode = 42;
-            }
-            else
-            {
-                strcpy( tempMetaDataDescriptor, tempHelperPtr );
-            }
-
-            tempHelperPtr = strtok( NULL, ":" );
-            if( tempHelperPtr == NULL )
-            {
-                tempErrorCode = 53;
-            }
-            else if( tempHelperPtr[ 0 ] > '9' || tempHelperPtr[ 0 ] < '0' )
-            {
-                tempErrorCode = 54;
-            }
-            else
-            {
-                tempNumberOfCycles = atoi( tempHelperPtr );
-            }
-
-            if( tempNumberOfCycles < 0 )
-            {
-                tempErrorCode = 52;
-            }
-            
-            tempNode.SetMetaDataCode( tempMetaDataCode );
-            tempNode.SetMetaDataDescriptor( tempMetaDataDescriptor );
-            tempNode.SetNumberOfCycles( tempNumberOfCycles );
-            tempNode.SetErrorCode( tempErrorCode );
-            aQueueOfMetaData->Enqueue( tempNode );
-
-            tempHelperPtr = tempHelperPtrAnchor;
-            strcpy( tempHelperPtr, tempHelper );
-            tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
-
-            for( int i = 0; i < iterator; i++ )
-            {
-                tempHelperPtr = strtok( NULL, ",.:;\0" );
-            }
-
-            tempHelperPtr = strtok( NULL, "\0" );
-
-            iterator++;
+            tempErrorCode = 33;
+        }
+        else if( tempMetaDataCode > 'Z' || tempMetaDataCode < 'A' )
+        {
+            tempErrorCode = 32;
         }
 
-        delete tempHelperPtr;
-        tempHelperPtr = NULL;
-        tempHelperPtrAnchor = NULL;
+        tempHelperPtr = strtok( NULL, ")" );
+        if( tempHelperPtr == NULL )
+        {
+            tempErrorCode = 42;
+        }
+        else
+        {
+            strcpy( tempMetaDataDescriptor, tempHelperPtr );
+        }
 
-        return true;
+        tempHelperPtr = strtok( NULL, ":" );
+        if( tempHelperPtr == NULL )
+        {
+            tempErrorCode = 53;
+        }
+        else if( tempHelperPtr[ 0 ] > '9' || tempHelperPtr[ 0 ] < '0' )
+        {
+            tempErrorCode = 54;
+        }
+        else
+        {
+            tempNumberOfCycles = atoi( tempHelperPtr );
+        }
+
+        if( tempNumberOfCycles < 0 )
+        {
+            tempErrorCode = 52;
+        }
+        
+        tempNode.SetMetaDataCode( tempMetaDataCode );
+        tempNode.SetMetaDataDescriptor( tempMetaDataDescriptor );
+        tempNode.SetNumberOfCycles( tempNumberOfCycles );
+        tempNode.SetErrorCode( tempErrorCode );
+
+        aQueueOfMetaData->Enqueue( tempNode );
+
+        tempHelperPtr = tempHelperPtrAnchor;
+        strcpy( tempHelperPtr, tempHelper );
+        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
+
+        for( int i = 0; i < iterator; i++ )
+        {
+            tempHelperPtr = strtok( NULL, ",.:;\0" );
+        }
+
+        tempHelperPtr = strtok( NULL, "\0" );
+
+        iterator++;
     }
-}
 
+    tempHelperPtr = NULL;
+    tempHelperPtrAnchor = NULL;
+
+    return true;
+} // end ParseLine
+
+/**<
+Helper function to make parsing easier
+
+@pre    None.
+@post   The specified string will have all space characters removed.
+@param  lineToRemoveSpaces The string who's spaces will be removed.
+@return void
+****************************************************************************/
 void MetaDataInfo::RemoveSpaces( char lineToRemoveSpaces[ ] )
 {
     for( int i = 0; i < ( int ) strlen( lineToRemoveSpaces ); i++ )
@@ -464,7 +477,19 @@ void MetaDataInfo::RemoveSpaces( char lineToRemoveSpaces[ ] )
             AdjustLineElements( lineToRemoveSpaces, i );
         }
     }
-}
+} // end RemoveSpaces
+
+/**<
+Helper function to make removing spaces easier
+
+@pre    None.
+@post   The specified string will have all leading characters from the
+        position specified moved back one space.
+@param  lineToAdjust The line that will be adjusted.
+@param  positionToAdjust The position in the string to which we are
+        adjusting.
+@return void
+****************************************************************************/
 void MetaDataInfo::AdjustLineElements(  char lineToAdjust[ ], 
                                         int positionToAdjust )
 {
@@ -472,7 +497,20 @@ void MetaDataInfo::AdjustLineElements(  char lineToAdjust[ ],
     {
         lineToAdjust[ i ] = lineToAdjust[ i + 1 ];
     }
-}
+} // end AdjustLineElements
+
+/**<
+Helper function make dealing with errors easier
+
+@pre    None.
+@post   The specified error code will be handled and logged appropriately.
+@param  logSpecification The specification code indicating where to log
+        error.
+@param  errorCode The code that needs to be handled.
+@param  logFile The file where the error will be logged if specified to log
+        to file.
+@return void
+****************************************************************************/
 void MetaDataInfo::ProcessErrorCode(    char logSpecification, 
                                         char errorCode, 
                                         ofstream& logFile )
@@ -522,7 +560,19 @@ void MetaDataInfo::ProcessErrorCode(    char logSpecification,
     LogOutput( logSpecification, tempMessage, logFile );
 }
 
+/**<
+Helper function to make logging messages easier
 
+@pre    None.
+@post   The message to be logged will be logged to the appropriate
+        destinations.
+@param  logSpecification The specification code indicating where to log
+        error.
+@param  logMessage The message that needs to be logged.
+@param  logFile The file where the error will be logged if specified to log
+        to file.
+@return void
+****************************************************************************/
 void MetaDataInfo::LogOutput(   char logSpecification, 
                                 char* logMessage, 
                                 ofstream& logFile )
@@ -535,7 +585,19 @@ void MetaDataInfo::LogOutput(   char logSpecification,
     {
         logFile << logMessage;
     }
-}        
+} // end LogOutput
+
+/**<
+Helper function to convert from an integer to a string
+
+@pre    None.
+@post   The integer value passed into the function will be converted into
+        a string representation to make logging easier.
+@param  inputValue The integer value that will be converted to a string.
+@param  ouputString The string where the converted value will be stored.
+@param  base The base to convert to. i.e. 10 = decimal, 16 = hexadecimal.
+@return void
+****************************************************************************/ 
 void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
 {
     int i = 0;
@@ -570,8 +632,17 @@ void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
     ReverseString( outputString, i );
 
     return;
-}
+} // end itoa
 
+/**<
+Helper function to make converting from int to string easier. 
+
+@pre    None.
+@post   The string passed in will be reversed.
+@param  string The string to be reversed.
+@param  size The size of the string passed in.
+@return void
+****************************************************************************/ 
 void MetaDataInfo::ReverseString( char* string, int size )
 {
     char buffer;
@@ -581,6 +652,6 @@ void MetaDataInfo::ReverseString( char* string, int size )
         string[ i ] = string[ size - i ];
         string[ size - i ] = buffer;
     }
-}
+} // end ReverseString
 
 

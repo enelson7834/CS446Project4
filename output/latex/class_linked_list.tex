@@ -1,0 +1,193 @@
+\hypertarget{class_linked_list}{\section{Linked\-List$<$ Item\-Type $>$ Class Template Reference}
+\label{class_linked_list}\index{Linked\-List$<$ Item\-Type $>$@{Linked\-List$<$ Item\-Type $>$}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_linked_list_adf8d8164e06b6d358a36df7e53e814ee}{Linked\-List} ()
+\item 
+\hyperlink{class_linked_list_a5f2ab4b02492afc40fb93d9df296a23d}{Linked\-List} (\hyperlink{class_linked_list}{Linked\-List}$<$ Item\-Type $>$ \&Source)
+\item 
+\hyperlink{class_linked_list_a66aee17d756fe0e002375897383c180b}{$\sim$\-Linked\-List} ()
+\item 
+bool \hyperlink{class_linked_list_a3b295d42a798af81e47ffbc7722a4814}{Is\-Empty} ()
+\item 
+bool \hyperlink{class_linked_list_a199d85d5b619a1b8ae5d5ded26aa8dab}{Is\-Full} ()
+\item 
+int \hyperlink{class_linked_list_af008cafb2c34120ffed6c8ee1264b5de}{Get\-Length} ()
+\item 
+bool \hyperlink{class_linked_list_a12cac251309838871521918bfd4a2a93}{Remove\-Entry} (int Position)
+\item 
+void \hyperlink{class_linked_list_aff656daf152f61b026a3db56b512872d}{Clear} ()
+\item 
+bool \hyperlink{class_linked_list_acccadd7db9522ec209be2bc998477ce8}{Insert\-Entry} (int Position, const Item\-Type \&Data)
+\item 
+bool \hyperlink{class_linked_list_a347095bb4fb5f725942f1e51a0dc4f5d}{push} (const Item\-Type \&Data)
+\item 
+bool \hyperlink{class_linked_list_a9b0d447243900fbecf99d345a9bd0177}{pop} ()
+\item 
+Item\-Type $\ast$ \hyperlink{class_linked_list_a2cc3359498e151904a63088c7137d97a}{Get\-Entry} (int Position)
+\item 
+void \hyperlink{class_linked_list_a8a35aff8cede3a8f31a2388d377e2a27}{print} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_linked_list_adf8d8164e06b6d358a36df7e53e814ee}{\index{Linked\-List@{Linked\-List}!Linked\-List@{Linked\-List}}
+\index{Linked\-List@{Linked\-List}!LinkedList@{Linked\-List}}
+\subsubsection[{Linked\-List}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ {\bf Linked\-List}$<$ Item\-Type $>$\-::{\bf Linked\-List} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_adf8d8164e06b6d358a36df7e53e814ee}
+$<$ Default constructor for \hyperlink{class_linked_list}{Linked\-List} \hypertarget{class_linked_list_a5f2ab4b02492afc40fb93d9df296a23d}{\index{Linked\-List@{Linked\-List}!Linked\-List@{Linked\-List}}
+\index{Linked\-List@{Linked\-List}!LinkedList@{Linked\-List}}
+\subsubsection[{Linked\-List}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type$>$ {\bf Linked\-List}$<$ Item\-Type $>$\-::{\bf Linked\-List} (
+\begin{DoxyParamCaption}
+\item[{{\bf Linked\-List}$<$ Item\-Type $>$ \&}]{Source}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a5f2ab4b02492afc40fb93d9df296a23d}
+$<$ Copy constructor for list \hypertarget{class_linked_list_a66aee17d756fe0e002375897383c180b}{\index{Linked\-List@{Linked\-List}!$\sim$\-Linked\-List@{$\sim$\-Linked\-List}}
+\index{$\sim$\-Linked\-List@{$\sim$\-Linked\-List}!LinkedList@{Linked\-List}}
+\subsubsection[{$\sim$\-Linked\-List}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ {\bf Linked\-List}$<$ Item\-Type $>$\-::$\sim${\bf Linked\-List} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a66aee17d756fe0e002375897383c180b}
+$<$ Deconstructor for \hyperlink{class_linked_list}{Linked\-List} 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_linked_list_aff656daf152f61b026a3db56b512872d}{\index{Linked\-List@{Linked\-List}!Clear@{Clear}}
+\index{Clear@{Clear}!LinkedList@{Linked\-List}}
+\subsubsection[{Clear}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ void {\bf Linked\-List}$<$ Item\-Type $>$\-::Clear (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_aff656daf152f61b026a3db56b512872d}
+$<$ Clears the list \begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\begin{DoxyPrecond}{Precondition}
+Remove\-Entry and Is\-Empty functions are working properly 
+\end{DoxyPrecond}
+\hypertarget{class_linked_list_a2cc3359498e151904a63088c7137d97a}{\index{Linked\-List@{Linked\-List}!Get\-Entry@{Get\-Entry}}
+\index{Get\-Entry@{Get\-Entry}!LinkedList@{Linked\-List}}
+\subsubsection[{Get\-Entry}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ Item\-Type $\ast$ {\bf Linked\-List}$<$ Item\-Type $>$\-::Get\-Entry (
+\begin{DoxyParamCaption}
+\item[{int}]{Position}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a2cc3359498e151904a63088c7137d97a}
+$<$ Peeks at the data at a specified position \begin{DoxyReturn}{Returns}
+Returns a pointer to the data at specified position 
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em Position} & The position of where to Get\-Entry \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_linked_list_af008cafb2c34120ffed6c8ee1264b5de}{\index{Linked\-List@{Linked\-List}!Get\-Length@{Get\-Length}}
+\index{Get\-Length@{Get\-Length}!LinkedList@{Linked\-List}}
+\subsubsection[{Get\-Length}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ int {\bf Linked\-List}$<$ Item\-Type $>$\-::Get\-Length (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_af008cafb2c34120ffed6c8ee1264b5de}
+$<$ Returns the size of the \hyperlink{class_linked_list}{Linked\-List} \begin{DoxyReturn}{Returns}
+Number of elements in the list 
+\end{DoxyReturn}
+\hypertarget{class_linked_list_acccadd7db9522ec209be2bc998477ce8}{\index{Linked\-List@{Linked\-List}!Insert\-Entry@{Insert\-Entry}}
+\index{Insert\-Entry@{Insert\-Entry}!LinkedList@{Linked\-List}}
+\subsubsection[{Insert\-Entry}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type$>$ bool {\bf Linked\-List}$<$ Item\-Type $>$\-::Insert\-Entry (
+\begin{DoxyParamCaption}
+\item[{int}]{Position, }
+\item[{const Item\-Type \&}]{Data}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_acccadd7db9522ec209be2bc998477ce8}
+$<$ Inserts a new element at specified position \begin{DoxyReturn}{Returns}
+The success value of the function 
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em Position} & The position where the element will be Insert\-Entryed \\
+\hline
+{\em Data} & The data that will be Insert\-Entryed \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_linked_list_a3b295d42a798af81e47ffbc7722a4814}{\index{Linked\-List@{Linked\-List}!Is\-Empty@{Is\-Empty}}
+\index{Is\-Empty@{Is\-Empty}!LinkedList@{Linked\-List}}
+\subsubsection[{Is\-Empty}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ bool {\bf Linked\-List}$<$ Item\-Type $>$\-::Is\-Empty (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a3b295d42a798af81e47ffbc7722a4814}
+$<$ Checks if the list is empty \begin{DoxyReturn}{Returns}
+Success value of function 
+\end{DoxyReturn}
+\hypertarget{class_linked_list_a199d85d5b619a1b8ae5d5ded26aa8dab}{\index{Linked\-List@{Linked\-List}!Is\-Full@{Is\-Full}}
+\index{Is\-Full@{Is\-Full}!LinkedList@{Linked\-List}}
+\subsubsection[{Is\-Full}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ bool {\bf Linked\-List}$<$ Item\-Type $>$\-::Is\-Full (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a199d85d5b619a1b8ae5d5ded26aa8dab}
+$<$ Checks if the list is full \begin{DoxyReturn}{Returns}
+Always returns false as linked lists do not have max size 
+\end{DoxyReturn}
+\hypertarget{class_linked_list_a9b0d447243900fbecf99d345a9bd0177}{\index{Linked\-List@{Linked\-List}!pop@{pop}}
+\index{pop@{pop}!LinkedList@{Linked\-List}}
+\subsubsection[{pop}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ bool {\bf Linked\-List}$<$ Item\-Type $>$\-::pop (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a9b0d447243900fbecf99d345a9bd0177}
+$<$ Pops data off of last element of list \begin{DoxyReturn}{Returns}
+Success value of function 
+\end{DoxyReturn}
+\hypertarget{class_linked_list_a8a35aff8cede3a8f31a2388d377e2a27}{\index{Linked\-List@{Linked\-List}!print@{print}}
+\index{print@{print}!LinkedList@{Linked\-List}}
+\subsubsection[{print}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ void {\bf Linked\-List}$<$ Item\-Type $>$\-::print (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a8a35aff8cede3a8f31a2388d377e2a27}
+$<$ Prints all value in the linked list \begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_linked_list_a347095bb4fb5f725942f1e51a0dc4f5d}{\index{Linked\-List@{Linked\-List}!push@{push}}
+\index{push@{push}!LinkedList@{Linked\-List}}
+\subsubsection[{push}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type$>$ bool {\bf Linked\-List}$<$ Item\-Type $>$\-::push (
+\begin{DoxyParamCaption}
+\item[{const Item\-Type \&}]{Data}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a347095bb4fb5f725942f1e51a0dc4f5d}
+$<$ Pushes value onto the end of the list \begin{DoxyReturn}{Returns}
+The success value of the function 
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em Data} & The data that will be pushed \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_linked_list_a12cac251309838871521918bfd4a2a93}{\index{Linked\-List@{Linked\-List}!Remove\-Entry@{Remove\-Entry}}
+\index{Remove\-Entry@{Remove\-Entry}!LinkedList@{Linked\-List}}
+\subsubsection[{Remove\-Entry}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Item\-Type $>$ bool {\bf Linked\-List}$<$ Item\-Type $>$\-::Remove\-Entry (
+\begin{DoxyParamCaption}
+\item[{int}]{Position}
+\end{DoxyParamCaption}
+)}}\label{class_linked_list_a12cac251309838871521918bfd4a2a93}
+$<$ Removes an element at specified position \begin{DoxyReturn}{Returns}
+Returns the Success value for the function 
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em Position} & The position at which it is desired that an element be removed. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+Element will be deleted from specified position 
+\end{DoxyPostcond}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+Linked\-List.\-hh\end{DoxyCompactItemize}

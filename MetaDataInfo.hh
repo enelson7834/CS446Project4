@@ -1,3 +1,25 @@
+/**
+@file MetaDataInfo.hh
+@author Eugene Nelson
+@breif The header file for the MetaDataInfo class.
+@version    1.0 Eugene Nelson
+            Originally developed ( 9 - 19 - 17 )
+*/
+/////////////////////////////////////////////////////////////////////////////
+// Precompiler Directives 
+/////////////////////////////////////////////////////////////////////////////
+#ifndef meta_data_info_hh
+#define meta_data_info_hh
+
+/////////////////////////////////////////////////////////////////////////////
+// Constant Definition 
+/////////////////////////////////////////////////////////////////////////////
+#define LINE_MAX_LEGNTH 300
+#define MESSAGE_MAX_LENGTH 500
+
+/////////////////////////////////////////////////////////////////////////////
+// Header Files
+/////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -8,19 +30,16 @@
 #include "LinkedQueue.hh"
 #include "ConfigFileInput.hh"
 
-#ifndef meta_data_info_hh
-#define meta_data_info_hh
-
-#define LINE_MAX_LEGNTH 300
-#define MESSAGE_MAX_LENGTH 500
-
+/////////////////////////////////////////////////////////////////////////////
+// Class Definition
+/////////////////////////////////////////////////////////////////////////////
 class MetaDataInfo
 {
     public:
         MetaDataInfo( char* fileName );
         ~MetaDataInfo( );
 
-        void ProcessData( ConfigFileInput configFile );
+        void ProcessData( ConfigFileInput& configFile );
     protected:
         bool ParseLine( char lineToParse[ ] );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );

@@ -1,0 +1,142 @@
+\hypertarget{class_config_file_input}{\section{Config\-File\-Input Class Reference}
+\label{class_config_file_input}\index{Config\-File\-Input@{Config\-File\-Input}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_config_file_input_a5b6ab2074273bc9617fbc31dfa9ec1a9}{{\bfseries Config\-File\-Input} (char $\ast$file\-Name)}\label{class_config_file_input_a5b6ab2074273bc9617fbc31dfa9ec1a9}
+
+\item 
+\hypertarget{class_config_file_input_acb6a962a5a02bacadafcb454b866afb6}{{\bfseries Config\-File\-Input} (const \hyperlink{class_config_file_input}{Config\-File\-Input} \&copy\-Input)}\label{class_config_file_input_acb6a962a5a02bacadafcb454b866afb6}
+
+\item 
+\hypertarget{class_config_file_input_a58a7e540964501de1cc7c5b1dd46e1e3}{int {\bfseries Get\-Number\-Of\-Processes} ()}\label{class_config_file_input_a58a7e540964501de1cc7c5b1dd46e1e3}
+
+\item 
+int \hyperlink{class_config_file_input_acc67c518509dd65e79b0b3781ad14f91}{Get\-Process\-Value} (const char process\-Name\mbox{[}$\,$\mbox{]})
+\item 
+\hypertarget{class_config_file_input_aedf743487e75ba4a319c10ef6a3a4d6c}{char $\ast$ {\bfseries Get\-Process\-Name} (const int position)}\label{class_config_file_input_aedf743487e75ba4a319c10ef6a3a4d6c}
+
+\item 
+\hypertarget{class_config_file_input_ab912e1b4898d643e229c8093113eeeb7}{char {\bfseries Get\-Log\-Output\-Specification} ()}\label{class_config_file_input_ab912e1b4898d643e229c8093113eeeb7}
+
+\item 
+\hypertarget{class_config_file_input_aa9d2fba6514a5100922e6bddb4e2aaf5}{char $\ast$ {\bfseries Get\-File\-Path} ()}\label{class_config_file_input_aa9d2fba6514a5100922e6bddb4e2aaf5}
+
+\item 
+\hypertarget{class_config_file_input_aed8b12496389a14b9ffe831f9d830e2f}{char $\ast$ {\bfseries Get\-Log\-File\-Path} ()}\label{class_config_file_input_aed8b12496389a14b9ffe831f9d830e2f}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_config_file_input_a0ce04d1364d6048e8e1b374a257c0fac}{Parse\-Line} (char line\-To\-Parse\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{class_config_file_input_a03db614273e102258ad420f21c127d04}{Remove\-Spaces} (char line\-To\-Remove\-Spaces\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{class_config_file_input_ac56e4a2363d4b4b3dc208a64530acd2f}{Adjust\-Line\-Elements} (char line\-To\-Adjust\mbox{[}$\,$\mbox{]}, int position\-To\-Adjust)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_config_file_input_ac56e4a2363d4b4b3dc208a64530acd2f}{\index{Config\-File\-Input@{Config\-File\-Input}!Adjust\-Line\-Elements@{Adjust\-Line\-Elements}}
+\index{Adjust\-Line\-Elements@{Adjust\-Line\-Elements}!ConfigFileInput@{Config\-File\-Input}}
+\subsubsection[{Adjust\-Line\-Elements}]{\setlength{\rightskip}{0pt plus 5cm}void Config\-File\-Input\-::\-Adjust\-Line\-Elements (
+\begin{DoxyParamCaption}
+\item[{char}]{line\-To\-Adjust\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{position\-To\-Adjust}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_config_file_input_ac56e4a2363d4b4b3dc208a64530acd2f}
+$<$ Helper function to make removing spaces easier
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The specified string will have all leading characters from the position specified moved back one space. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em line\-To\-Adjust} & The line that will be adjusted. \\
+\hline
+{\em position\-To\-Adjust} & The position in the string to which we are adjusting. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_config_file_input_acc67c518509dd65e79b0b3781ad14f91}{\index{Config\-File\-Input@{Config\-File\-Input}!Get\-Process\-Value@{Get\-Process\-Value}}
+\index{Get\-Process\-Value@{Get\-Process\-Value}!ConfigFileInput@{Config\-File\-Input}}
+\subsubsection[{Get\-Process\-Value}]{\setlength{\rightskip}{0pt plus 5cm}int Config\-File\-Input\-::\-Get\-Process\-Value (
+\begin{DoxyParamCaption}
+\item[{const char}]{process\-Name\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{class_config_file_input_acc67c518509dd65e79b0b3781ad14f91}
+$<$ Searches for the specified process name in the list of processes to get it's value Simply searches through the list to find the position of the process we are looking for and uses that position to get the value.
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The value of the process with the given name is returned. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em process\-Name} & The name of the process to search for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the specified process. 
+\end{DoxyReturn}
+\hypertarget{class_config_file_input_a0ce04d1364d6048e8e1b374a257c0fac}{\index{Config\-File\-Input@{Config\-File\-Input}!Parse\-Line@{Parse\-Line}}
+\index{Parse\-Line@{Parse\-Line}!ConfigFileInput@{Config\-File\-Input}}
+\subsubsection[{Parse\-Line}]{\setlength{\rightskip}{0pt plus 5cm}bool Config\-File\-Input\-::\-Parse\-Line (
+\begin{DoxyParamCaption}
+\item[{char}]{line\-To\-Parse\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_config_file_input_a0ce04d1364d6048e8e1b374a257c0fac}
+$<$ Helper function that parses the lines in the config file and stores the relevent information.
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The line will be parsed through and the tokens will be extracted and saved in the nodes in the list. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em line\-To\-Parse} & The line to parse through. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The status of the parse line function. 
+\end{DoxyReturn}
+\hypertarget{class_config_file_input_a03db614273e102258ad420f21c127d04}{\index{Config\-File\-Input@{Config\-File\-Input}!Remove\-Spaces@{Remove\-Spaces}}
+\index{Remove\-Spaces@{Remove\-Spaces}!ConfigFileInput@{Config\-File\-Input}}
+\subsubsection[{Remove\-Spaces}]{\setlength{\rightskip}{0pt plus 5cm}void Config\-File\-Input\-::\-Remove\-Spaces (
+\begin{DoxyParamCaption}
+\item[{char}]{line\-To\-Remove\-Spaces\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_config_file_input_a03db614273e102258ad420f21c127d04}
+$<$ Helper function to make parsing easier
+
+\begin{DoxyPrecond}{Precondition}
+None. 
+\end{DoxyPrecond}
+\begin{DoxyPostcond}{Postcondition}
+The specified string will have all space characters removed. 
+\end{DoxyPostcond}
+
+\begin{DoxyParams}{Parameters}
+{\em line\-To\-Remove\-Spaces} & The string who's spaces will be removed. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_config_file_input_8hh}{Config\-File\-Input.\-hh}\item 
+Config\-File\-Input.\-cc\end{DoxyCompactItemize}

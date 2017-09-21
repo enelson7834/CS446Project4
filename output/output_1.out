@@ -1,0 +1,38 @@
+Configuration File Data:
+Speaker = 10 ms/cycle
+Mouse = 20 ms/cycle
+Memory = 35 ms/cycle
+Keyboard = 1000 ms/cycle
+Printer = 500 ms/cycle
+Hard Drive = 50 ms/cycle
+Monitor = 25 ms/cycle
+Processor = 10 ms/cycle
+Logged to: monitor and output/output_1.out
+
+Meta-Data Metrics
+M(allocate)12 - 420 ms
+I(keyboard)6 - 6000 ms
+O(printer)15 - 7500 ms
+P(run)10 - 100 ms
+I(hard drive)14 - 700 ms
+O(printer)10 - 5000 ms
+P(run)9 - 90 ms
+P(run)9 - 90 ms
+I(keyboard)5 - 5000 ms
+P(run)14 - 140 ms
+O(hard drive)9 - 450 ms
+I(keyboard)15 - 15000 ms
+O(hard drive)5 - 250 ms
+I(hard drive)12 - 600 ms
+O(hard drive)7 - 350 ms
+P(run)8 - 80 ms
+I(hard drive)12 - 600 ms
+O(printer)12 - 6000 ms
+P(run)11 - 110 ms
+I(keyboard)10 - 10000 ms
+P(run)10 - 100 ms
+O(printer)15 - 7500 ms
+I(keyboard)6 - 6000 ms
+P(run)11 - 110 ms
+P(run)14 - 140 ms
+O(printer)6 - 3000 ms

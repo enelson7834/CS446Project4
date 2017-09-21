@@ -1,3 +1,10 @@
+/**
+@file MetaDataInfoNode.cc
+@author Eugene Nelson
+@breif The implamentation for the MetaDataInfoNode class
+@version    1.0 Eugene Nelon
+            Originally developed ( 9 - 20 - 17 ) 
+*/
 #include "MetaDataInfoNode.hh"
 
 MetaDataInfoNode::MetaDataInfoNode( )
@@ -74,7 +81,6 @@ int MetaDataInfoNode::GetErrorCode( ) const
 {
     return aErrorCode;
 }
-
 
 MetaDataInfoNode& MetaDataInfoNode::operator=( 
                                             const MetaDataInfoNode& copyNode )
