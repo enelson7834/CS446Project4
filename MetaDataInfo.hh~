@@ -14,7 +14,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Constant Definition 
 /////////////////////////////////////////////////////////////////////////////
-#define MAX_STR_LEN 30
 #define LINE_MAX_LEGNTH 300
 #define MESSAGE_MAX_LENGTH 500
 
@@ -22,39 +21,14 @@
 // Header Files
 /////////////////////////////////////////////////////////////////////////////
 #include <iostream>
-#include <queue>
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
 #include <cstdlib>
 
-//#include "MetaDataInfoNode.hh"
+#include "MetaDataInfoNode.hh"
+//#include "LinkedQueue.hh"
 #include "ConfigFileInput.hh"
-
-/////////////////////////////////////////////////////////////////////////////
-// Struct Definition
-/////////////////////////////////////////////////////////////////////////////
-struct MetaDataInfoNode 
-{
-    char MetaDataCode;
-    char* MetaDataDescriptor;
-    int NumberOfCycles;
-    int ErrorCode;
-    
-    MetaDataInfoNode( )
-    {
-        MetaDataDescriptor = new char[ MAX_STR_LEN ];
-    }
-    MetaDataInfoNode( const MetaDataInfoNode& copyNode )
-    {
-        MetaDataDescriptor = new char[ MAX_STR_LEN ];
-
-        MetaDataCode = copyNode.MetaDataCode;
-        strcpy( MetaDataDescriptor, copyNode.MetaDataDescriptor );
-        NumberOfCycles = copyNode.NumberOfCycles;
-        ErrorCode = copyNode.ErrorCode;
-    }
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // Class Definition

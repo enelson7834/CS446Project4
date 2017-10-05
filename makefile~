@@ -1,5 +1,5 @@
 OBJS = MetaDataInfo.o MetaDataInfoNode.o ConfigFileInputNode.o ConfigFileInput.o main.o
-FILESET = ConfigFileInput.hh ConfigFileInput.cc ConfigFileInputNode.hh ConfigFileInputNode.cc MetaDataInfo.hh MetaDataInfo.cc MetaDataInfoNode.hh MetaDataInfoNode.cc main.cpp
+FILESET = ConfigFileInput.hh ConfigFileInput.cc ConfigFileInputNode.hh ConfigFileInputNode.cc MetaDataInfo.hh MetaDataInfo.cc MetaDataInfoNode.hh MetaDataInfoNode.cc LinkedList.hh Node.hh main.cpp
 CC = g++
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
@@ -7,7 +7,7 @@ LFLAGS = -Wall $(DEBUG)
 
 Sim01: $(OBJS)
 	$(CC) $(LFLAGS) ConfigFileInputNode.o ConfigFileInput.o MetaDataInfo.o MetaDataInfoNode.o main.o -o Sim01
-ConfigFileInput.o: ConfigFileInput.hh ConfigFileInput.cc ConfigFileInputNode.hh
+ConfigFileInput.o: ConfigFileInput.hh ConfigFileInput.cc ConfigFileInputNode.hh LinkedList.hh
 	$(CC) $(CFLAGS) ConfigFileInput.cc
 ConfigFileInputNode.o:	ConfigFileInputNode.cc ConfigFileInputNode.hh
 	$(CC) $(CFLAGS) ConfigFileInputNode.cc

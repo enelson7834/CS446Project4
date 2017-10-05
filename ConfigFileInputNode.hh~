@@ -17,12 +17,18 @@ the config file to retrieve necessary information.
 #define namespace_config_file_input_node_hh
 
 /////////////////////////////////////////////////////////////////////////////
+// Definitions
+/////////////////////////////////////////////////////////////////////////////
+
+#define STR_MAX_LENGTH 300
+
+/////////////////////////////////////////////////////////////////////////////
 // Header Files
 /////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <cstring>
 
 /////////////////////////////////////////////////////////////////////////////
 // Class Definitions
@@ -32,31 +38,29 @@ class ConfigFileInputNode
 {
 	public:
 	            ConfigFileInputNode( );
-	            ConfigFileInputNode(    const string newProcessName, 
-	                                    const int newProcessTime );
+	            ConfigFileInputNode(    const char newProcessName[ ], 
+	                                    const int newProcessValue );
+                ConfigFileInputNode( const ConfigFileInputNode& copyNode );
 	            ~ConfigFileInputNode( );
 	    
-	    string  GetProcessName( );
-	    int     GetProcessTime( );
+	    char*   GetProcessName( );
+	    int     GetProcessValue( );
 	    
-	    void    SetProcessName( string newProcessName );
-	    void    SetProcessTime( int newProcessTime );
-	                                    
-	    bool operator==( const string processName ) const; 
+	    void    SetProcessName( char newProcessName[ ] );
+	    void    SetProcessValue( int newProcessValue );
+	                                  
+	    bool    operator==( const char processName[ ] ) const; 
+	    void    operator=(const ConfigFileInputNode& copyNode );
+	    friend std::ostream& operator<<( std::ostream& out, const ConfigFileInputNode& output )
+	    {
+            out << output.aProcessName << " " << output.aProcessValue << std::endl;
+            return out;   
+        }
 	    
 	private:
-	    string  aProcessName;
-	    int     aProcessTime;
+	    char*  aProcessName;
+	    int    aProcessValue;
 };
 
-bool ConfigFileInputNode::operator==( const string processName ) const
-{
-    if( aProcessName == processName )
-    {
-        return true;
-    }
-    
-    return false;
-}
 
 #endif

@@ -1,14 +1,8 @@
-/**
-@file ConfigFileInputNode.cc
-@author Eugene Nelson
-@breif The implamentation for the ConfigFileInputNode class
-@version    1.0 Eugene Nelon
-            Originally developed ( 9 - 20 - 17 ) 
-*/
 #include "ConfigFileInputNode.hh"
 
 ConfigFileInputNode::ConfigFileInputNode( )
 {
+    aProcessName = new char[ STR_MAX_LENGTH ];
     strcpy( aProcessName, "None" );
     aProcessValue = -1;
 }
@@ -16,12 +10,14 @@ ConfigFileInputNode::ConfigFileInputNode( )
 ConfigFileInputNode::ConfigFileInputNode(   const char newProcessName[ ],
                                             const int newProcessValue )
 {
+    aProcessName = new char[ STR_MAX_LENGTH ];
     strcpy( aProcessName, newProcessName );
     aProcessValue = newProcessValue;
 }
 
 ConfigFileInputNode::ConfigFileInputNode( const ConfigFileInputNode& copyNode )
 {
+    aProcessName = new char[ STR_MAX_LENGTH ];
     strcpy( aProcessName, copyNode.aProcessName );
     aProcessValue = copyNode.aProcessValue;
 }
@@ -29,7 +25,7 @@ ConfigFileInputNode::ConfigFileInputNode( const ConfigFileInputNode& copyNode )
 
 ConfigFileInputNode::~ConfigFileInputNode( )
 {
-    strcpy( aProcessName, "None" );
+    delete[] aProcessName;
     aProcessValue = -1;
 }
 
@@ -51,20 +47,24 @@ void    ConfigFileInputNode::SetProcessValue( int newaProcessValue )
 {
     aProcessValue = newaProcessValue;
 }
-                                
+ConfigFileInputNode ConfigFileInputNode::operator=( const ConfigFileInputNode& copyNode )
+{
+    if( this == &copyNode )
+    {
+        ;
+    }
+    else
+    {
+        delete[] aProcessName;
+        aProcessName = new char[ 
+        strcpy( aProcessName, copyNode.aProcessName );
+        aProcessValue = copyNode.aProcessValue;
+    }
+    
+    return *this;
+}                            
 bool    ConfigFileInputNode::operator==( const char processName[ ] ) const
 {
     return strcmp( aProcessName, processName );
 }
-ConfigFileInputNode ConfigFileInputNode::operator=( 
-                                    const ConfigFileInputNode& copyNode )
-{
-    if( this == &copyNode )
-    {
-        return *this;
-    }
-    strcpy( aProcessName, copyNode.aProcessName );
-    aProcessValue = copyNode.aProcessValue;
 
-    return *this;
-}

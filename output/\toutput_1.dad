@@ -1,0 +1,37 @@
+Configuration File Data:
+Processor = 10 ms/cycle
+Monitor = 25 ms/cycle
+Hard Drive = 50 ms/cycle
+Printer = 500 ms/cycle
+Keyboard = 1000 ms/cycle
+Memory = 35 ms/cycle
+System Memory  = 65536 kbytes
+Logged to: monitor and output/\toutput_1.dad
+
+Meta-Data Metrics
+Error: Error in meta data descriptor.
+Error: Error in meta data descriptor.
+Error: Error in meta data descriptor.
+Error in cycle value.
+I()14 - 458724 ms
+O()10 - 327660 ms
+Error in cycle value.
+Error in cycle value.
+I()5 - 163830 ms
+Error in cycle value.
+O()9 - 294894 ms
+Error: Error in meta data descriptor.
+O()7 - 229362 ms
+Error in cycle value.
+I()12 - 393192 ms
+O()12 - 393192 ms
+Error in cycle value.
+Error in cycle value.
+O()5 - 163830 ms
+I()5 - 163830 ms
+Error in cycle value.
+Error in cycle value.
+Error: Error in meta data descriptor.
+Error: Error in meta data descriptor.
+Error: Cycle value is negative.
+Error in meta data code.

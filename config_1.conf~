@@ -9,5 +9,5 @@ Keyboard cycle time (msec): 1000
 Memory cycle time (msec): 35
 System memory (kbytes): 65536
 Log: Log to Both
-Log File Path: output/\toutput_1.dad
+Log File Path: output/output_1.dad
 End Simulator Configuration File

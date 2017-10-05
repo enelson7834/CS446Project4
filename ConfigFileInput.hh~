@@ -1,45 +1,25 @@
-/**<
-Configuration file input nodes.
-
-Nodes will store information from the configuration file and parse
-the config file to retrieve necessary information.
-
-@file ConfigFileInputNode.hh
-@author Eugene Nelson
-@data 9/18/17
-@version 1.0 (Eugene Nelson 9/18/17)
-*/
-/////////////////////////////////////////////////////////////////////////////
-// File Definitions
-/////////////////////////////////////////////////////////////////////////////
-
-#ifndef namespace_config_file_input_node_hh
-#define namespace_config_file_input_node_hh
-
-/////////////////////////////////////////////////////////////////////////////
-// Header Files
-/////////////////////////////////////////////////////////////////////////////
-
-#include <iostream>
+#include <cstring>
 #include <fstream>
-#include <string>
-#include "LinkedList.hh"
-#include "ConfigFileInputNode.hh"
-
-/////////////////////////////////////////////////////////////////////////////
-// Namespace Declaration
-/////////////////////////////////////////////////////////////////////////////
-
-using namespace std;
-
-/////////////////////////////////////////////////////////////////////////////
-// Class Definitions
-/////////////////////////////////////////////////////////////////////////////
 
 class ConfigFileInput
 {
     public:
-    private:
-        string aFilePath;
+        ConfigFileInput( char* fileName );
+        ~ConfigFileInput( );
         
+        int GetProcessValue( char* process );
+        
+        int VersionNumber;
+        char* LogFilePath;
+        char LogOutputSpecification;
+        
+        int Processor;
+        int Moniter;
+        int HardDrive;
+        int Printer;
+        int Keyboard;
+        int Memory;
+        int Mouse;
+        int Speaker;
+        int SystemMemory;
 };

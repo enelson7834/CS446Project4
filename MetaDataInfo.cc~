@@ -175,12 +175,12 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 
         // Load Meta Data info into buffers
         /////////////////////////////////////////////////////////////////////
-        tempMetaDataCode = aQueueOfMetaData.front( ).MetaDataCode;
+        tempMetaDataCode = aQueueOfMetaData.front( ).GetMetaDataCode( );
         strcpy(    tempMetaDataDescriptor, 
-                    aQueueOfMetaData.front( ).MetaDataDescriptor );
+                    aQueueOfMetaData.front( ).GetMetaDataDescriptor( ) );
         tempNumberOfCycles = aQueueOfMetaData.
-                                            front( ).NumberOfCycles;
-        tempErrorCode = aQueueOfMetaData.front( ).ErrorCode;
+                                            front( ).GetNumberOfCycles( );
+        tempErrorCode = aQueueOfMetaData.front( ).GetErrorCode( );
 
         if( tempErrorCode != 0 )
         {
@@ -332,7 +332,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 
     // Return queue to original state
     /////////////////////////////////////////////////////////////////////////
-    while( !tempStorageQueue.empty( ) )
+    while( !tempStorageQueue.IsEmpty( ) )
     {
         aQueueOfMetaData.push( ( tempStorageQueue.front( ) ) );
         tempStorageQueue.pop( ); 
@@ -420,17 +420,13 @@ bool MetaDataInfo::ParseLine( char lineToParse[ ] )
         {
             tempErrorCode = 52;
         }
-                
-        tempNode.MetaDataCode = tempMetaDataCode;
-        tempNode.MetaDataDescriptor = tempMetaDataDescriptor;
-        tempNode.NumberOfCycles = tempNumberOfCycles;
-        tempNode.ErrorCode = tempErrorCode;
-
-        cout << tempNode.MetaDataCode<< endl;
+        
+        tempNode.SetMetaDataCode( tempMetaDataCode );
+        tempNode.SetMetaDataDescriptor( tempMetaDataDescriptor );
+        tempNode.SetNumberOfCycles( tempNumberOfCycles );
+        tempNode.SetErrorCode( tempErrorCode );
 
         aQueueOfMetaData.push( tempNode );
-        
-        cout << "dad"<< aQueueOfMetaData.front( ).MetaDataCode << endl;
 
         tempHelperPtr = tempHelperPtrAnchor;
         strcpy( tempHelperPtr, tempHelper );
@@ -580,9 +576,7 @@ void MetaDataInfo::LogOutput(   char logSpecification,
                                 char* logMessage, 
                                 ofstream& logFile )
 {
-    if( logSpecification == 'M' 
-        || logSpecification == 'B' 
-        || logSpecification == 'm' )
+    if( logSpecification == 'M' || logSpecification == 'B' )
     {
         cout << logMessage;
     }

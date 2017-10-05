@@ -16,20 +16,19 @@ template <class ItemType>
 class LinkedList
 {
     public:
-      	/** Default constructor, copy constructor, and deconstructor.*/
        	        LinkedList();
        	        LinkedList(const LinkedList<ItemType>& copyList);
        	        ~LinkedList();
 
         bool    IsEmpty() const;
-        int     GetLenth() const;
+        int     GetLength() const;
 
-        bool    InsertEntry(int newPosition, const ItemType& newEntry);
-        bool    RemoveEntry(int position);
+        bool    InsertEntry(const int newPosition, const ItemType& newEntry);
+        bool    RemoveEntry(const int position);
         void    Clear();
         bool    SetEntry(int position, const ItemType& newEntry);
         
-        ItemType    GetEntry(int position);
+        ItemType    GetEntry(int position) const;
 
 	private:
 	    Node<ItemType>* 	apHead;
@@ -51,18 +50,16 @@ Copy Constructor
 template <class ItemType>
 LinkedList<ItemType>::LinkedList( const LinkedList<ItemType>& copyList )
 {
+    this->aItemCount = 0;
     if( copyList.IsEmpty( ) )
     {
         this->apHead = NULL;
-        this->aItemCount = 0;
     }
     else
     {
-        for( int position = 0; position < copyList->aItemCount; 
-                                                        ++position )
+        for( int position = 0; position < copyList.aItemCount; ++position )
         {
-            this->InsertEntry( position, copyList->
-                                                GetItem( position ) );
+            this->InsertEntry( position, copyList.GetEntry( position ) );
         }
     }
 } // end Copy Constructor
@@ -82,9 +79,9 @@ Checks to see if the list is empty.
 @return True if list is empty. False otherwise.
 */		
 template <class ItemType>
-LinkedList<ItemType>::IsEmpty()
+bool LinkedList<ItemType>::IsEmpty() const
 {
-	if( aItemCount <= 0 )
+	if( aItemCount <= 0 && apHead == NULL )
 	{
 		return true;
 	} 
@@ -98,7 +95,7 @@ Gets the number of entries currently in the list.
 @return The integer number of entries in the list.
 */
 template <class ItemType>
-LinkedList<ItemType>::GetLenth()
+int LinkedList<ItemType>::GetLength() const
 {
 	return aItemCount;
 } // end GetLength
@@ -116,14 +113,13 @@ list.
 @note Position starts at 0 and goes to ItemCount -1.
 */
 template <class ItemType>
-bool LinkedList<ItemType>::InsertEntry( int newPosition, 
+bool LinkedList<ItemType>::InsertEntry( const int newPosition, 
                                         const ItemType& newEntry )
 {
     if( newPosition > aItemCount || newPosition < 0 ) 
     {
         return false;
     }
-
     if( this->IsEmpty(  ) )
     {
         apHead = new Node<ItemType>( newEntry, NULL );
@@ -131,19 +127,21 @@ bool LinkedList<ItemType>::InsertEntry( int newPosition,
     else if( newPosition == 0 )
     {
         Node<ItemType>* temp = new Node<ItemType>( newEntry, apHead );
+        
         apHead = temp;
         temp = NULL;
     }
     else
     {
         Node<ItemType>* cursor = apHead;
-        for( int i = 0; i < newPosition - 1; ++i )
+        for( int i = 0; i < ( newPosition - 1 ); i++ )
         {
             cursor = cursor->GetNext(  );
         }
         
         Node<ItemType>* temp = new Node<ItemType>( newEntry, 
                                                         cursor->GetNext( ) );
+        ItemType temp1( newEntry );
         cursor->SetNext( temp );
 
         temp = NULL;
@@ -164,7 +162,7 @@ removed was the first entry, then the head pointer is adjusted.
 @return True if the removal was successful. False otherwise.
 */
 template <class ItemType>
-bool LinkedList<ItemType>::RemoveEntry( int position )
+bool LinkedList<ItemType>::RemoveEntry( const int position )
 {
     if( this->IsEmpty(  ) ) 
     {
@@ -212,6 +210,7 @@ void LinkedList<ItemType>::Clear(  )
     {
         this->RemoveEntry( 0 );
     }
+    aItemCount = 0;
 } // end Clear
 
 /**<
@@ -223,15 +222,21 @@ Gets value of entry at a given position in the list.
 @return The entry at the given position.
 */
 template <class ItemType>
-ItemType LinkedList<ItemType>::GetEntry( int position )
+ItemType LinkedList<ItemType>::GetEntry( int position ) const
 {
-    if( this->IsEmpty(  ) ) return ItemType(  );
-    if( position >= aItemCount || position < 0 ) return ItemType(  );
+    if( this->IsEmpty( ) ) 
+    {
+        return ItemType( );
+    }
+    if( position > aItemCount || position < 0 ) 
+    {
+        return ItemType(  );
+    }
     
     Node<ItemType>* cursor = apHead;
-    for( int i = 0; i < position; ++i )
+    for( int i = 0; i < position; i++ )
     {
-        cursor = cursor->GetNext(  );
+        cursor = cursor->GetNext( );
     }
 
     return cursor->GetItem( );
