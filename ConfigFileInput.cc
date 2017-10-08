@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Constructors/Deconstructors
 /////////////////////////////////////////////////////////////////////////////
-ConfigFileInput::ConfigFileInput( char* fileName )
+ConfigFileInput::ConfigFileInput(   char* fileName )
 {
     aLogOutputSpecification = 'E';
 
@@ -91,17 +91,12 @@ int ConfigFileInput::GetProcessValue( const char processName[ ] )
 {
     list<ConfigFileInputNode>::iterator it = aListOfProcesses.begin( );
     while( strcmp( processName, 
-            it->GetProcessName( ) ) != 0
+            it->aProcessName ) != 0
             && it != aListOfProcesses.end( ) )
     {
         ++it;
     }
-
-    //if( it == NULL )
-    //{
-        //return -1;
-    //}
-    return it->GetProcessValue( );
+    return it->aProcessValue;
 } // end GetProcessValue
 
 char* ConfigFileInput::GetProcessName( const int position )
@@ -111,13 +106,7 @@ char* ConfigFileInput::GetProcessName( const int position )
     {
         ++it;
     }
-    
-    
-    //~ if( it == NULL )
-    //~ {
-        //~ return '\0';
-    //~ }
-    return it->GetProcessName( );
+    return it->aProcessName;
 } // end GetProcessName
 
 char ConfigFileInput::GetLogOutputSpecification( )
@@ -275,6 +264,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         int tempProcessValue = -1;
         char* tempValueToken;
         char* tempNameToken;
+        ConfigFileInputNode tempNode;
 
         tempValueToken = strpbrk( lineToParse, ":" );
         RemoveSpaces( tempValueToken );
@@ -311,7 +301,8 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
            tempProcessName[ i ] = tolower( tempProcessName[ i ] );
         }
 
-        ConfigFileInputNode tempNode( tempProcessName, tempProcessValue );
+        strcpy( tempNode.aProcessName, tempProcessName );
+        tempNode.aProcessValue = tempProcessValue;
 
         aListOfProcesses.insert( aListOfProcesses.end( ), tempNode );
 

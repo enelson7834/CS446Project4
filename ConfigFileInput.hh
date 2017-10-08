@@ -26,12 +26,34 @@
 #include <cstring>
 #include <stdlib.h>
 #include <list>
-#include "ConfigFileInputNode.hh"
 
 /////////////////////////////////////////////////////////////////////////////
 // Namespace Declaration
 /////////////////////////////////////////////////////////////////////////////
 using namespace std;
+
+/////////////////////////////////////////////////////////////////////////////
+// Struct Definition
+/////////////////////////////////////////////////////////////////////////////
+struct ConfigFileInputNode 
+{
+    char   aProcessName[ STR_MAX_LENGTH ];
+    int    aProcessValue;
+    
+    ConfigFileInputNode( )
+    {
+        ;
+    }
+    ConfigFileInputNode( const ConfigFileInputNode& copyNode )
+    {
+        strcpy( aProcessName, copyNode.aProcessName );
+        aProcessValue = copyNode.aProcessValue;
+    }
+    ~ConfigFileInputNode( )
+    {
+        ;
+    }
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // Class Definitions

@@ -1,37 +1,23 @@
-Configuration File Data:
-Processor = 10 ms/cycle
-Monitor = 25 ms/cycle
-Hard Drive = 50 ms/cycle
-Printer = 500 ms/cycle
-Keyboard = 1000 ms/cycle
-Memory = 35 ms/cycle
-System Memory  = 65536 kbytes
-Logged to: monitor and output/\toutput_1.dad
-
-Meta-Data Metrics
-Error: Error in meta data descriptor.
-Error: Error in meta data descriptor.
-Error: Error in meta data descriptor.
-Error in cycle value.
-I()14 - 458724 ms
-O()10 - 327660 ms
-Error in cycle value.
-Error in cycle value.
-I()5 - 163830 ms
-Error in cycle value.
-O()9 - 294894 ms
-Error: Error in meta data descriptor.
-O()7 - 229362 ms
-Error in cycle value.
-I()12 - 393192 ms
-O()12 - 393192 ms
-Error in cycle value.
-Error in cycle value.
-O()5 - 163830 ms
-I()5 - 163830 ms
-Error in cycle value.
-Error in cycle value.
-Error: Error in meta data descriptor.
-Error: Error in meta data descriptor.
-Error: Cycle value is negative.
-Error in meta data code.
+1e-06 - Simulator program starting
+5.6e-05 - OS: perparing process 1
+7.9e-05 - OS starting process 1
+M(allocate)12 - 420 ms
+P(run)4 - 40 ms
+I(hard drive)14 - 700 ms
+O(printer)10 - 5000 ms
+P(run)9 - 90 ms
+P(run)9 - 90 ms
+I(keyboard)5 - 5000 ms
+P(run)14 - 140 ms
+O(hard drive)9 - 450 ms
+M(allocate)4 - 140 ms
+O(hard drive)7 - 350 ms
+P(run)8 - 80 ms
+I(hard drive)12 - 600 ms
+O(printer)12 - 6000 ms
+P(run)11 - 110 ms
+P(run)1 - 10 ms
+O(printer)5 - 2500 ms
+I(monitor)5 - 125 ms
+P(run)11 - 110 ms
+P(run)14 - 140 ms

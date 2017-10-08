@@ -23,37 +23,42 @@
 /////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <queue>
+#include <iomanip>
+#include <sys/time.h>
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
 #include <cstdlib>
 
-//#include "MetaDataInfoNode.hh"
 #include "ConfigFileInput.hh"
+#include "PCB.hh"
 
 /////////////////////////////////////////////////////////////////////////////
 // Struct Definition
 /////////////////////////////////////////////////////////////////////////////
 struct MetaDataInfoNode 
 {
-    char MetaDataCode;
-    char* MetaDataDescriptor;
-    int NumberOfCycles;
-    int ErrorCode;
+    char aMetaDataCode;
+    char aMetaDataDescriptor[ MAX_STR_LEN ];
+    int aNumberOfCycles;
+    int aErrorCode;
     
     MetaDataInfoNode( )
     {
-        MetaDataDescriptor = new char[ MAX_STR_LEN ];
+        ;
     }
     MetaDataInfoNode( const MetaDataInfoNode& copyNode )
     {
-        MetaDataDescriptor = new char[ MAX_STR_LEN ];
-
-        MetaDataCode = copyNode.MetaDataCode;
-        strcpy( MetaDataDescriptor, copyNode.MetaDataDescriptor );
-        NumberOfCycles = copyNode.NumberOfCycles;
-        ErrorCode = copyNode.ErrorCode;
+        aMetaDataCode = copyNode.aMetaDataCode;
+        strcpy( aMetaDataDescriptor, copyNode.aMetaDataDescriptor );
+        aNumberOfCycles = copyNode.aNumberOfCycles;
+        aErrorCode = copyNode.aErrorCode;
     }
+    ~MetaDataInfoNode( )
+    {
+        ;
+    }
+
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,7 +70,9 @@ class MetaDataInfo
         MetaDataInfo( char* fileName );
         ~MetaDataInfo( );
 
-        void ProcessData( ConfigFileInput& configFile );
+        void ProcessData(   ConfigFileInput& configFile,
+                            PCB& state,
+                            timeval& initTime );
     protected:
         bool ParseLine( char lineToParse[ ] );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );
@@ -73,11 +80,15 @@ class MetaDataInfo
         void ProcessErrorCode(  char logSpecification, 
                                 char errorCode, 
                                 ofstream& logFile );
-        void LogOutput( char logSpecification, char* logMessage, 
+        void LogOutput( char logSpecification, 
+                        char* logMessage, 
                         ofstream& logFile );
+        void LogTime( char logSpecification, 
+                                    double time,
+                                    ofstream& logFile );      
         void itoa( int inputValue, char* outputString, int base );
         void ReverseString( char* string, int size );
-    private:
+        double timer( long long timeToWait, timeval& initTime );
         queue<MetaDataInfoNode> aQueueOfMetaData;
 };
 

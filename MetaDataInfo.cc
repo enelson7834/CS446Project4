@@ -13,6 +13,8 @@
 /////////////////////////////////////////////////////////////////////////////
 MetaDataInfo::MetaDataInfo( char* fileName )
 {
+	cout << fixed;
+	cout << setprecision( 6 ); 
     if( strstr( fileName, ".mdf" ) == NULL )
     {
         cout << "Error reading meta data file: Incorrect extention." << endl;
@@ -59,12 +61,14 @@ Processes the data from the Meta Data file and logs it to appropriate output
                     the simulation.
 @return void
 ****************************************************************************/
-void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
+void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
+								PCB& state,
+								timeval& initTime )
 {
     // Variable declarations/initialization
     /////////////////////////////////////////////////////////////////////////
-    char* tempLogFilePath = new char[ 30 ];
-    char* tempLogDirectory = new char[ 30 ];
+    char tempLogFilePath[ 30 ];
+    char tempLogDirectory[ 30 ];
     char* tempLogFilePathPtr;
     char logSpecification = configFile.GetLogOutputSpecification( );
 
@@ -94,17 +98,27 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
         return;
     } 
 
-
-    queue<MetaDataInfoNode> tempStorageQueue;
-
     char tempMessage[ 500 ];
+    
+    /*
     char tempProcessName[ 30 ];
     char tempProcessValue[ 5 ];
+	*/
+	
+    gettimeofday( &initTime, NULL );
 
+    if( state.processState == 1 )
+    {
+    	LogTime( logSpecification, timer( 1, initTime ), logFile );
+    	strcpy( tempMessage, " - Simulator program starting\n" );
+    	LogOutput( logSpecification, tempMessage, logFile);
+    	state.processState++;
+    }
+
+    queue<MetaDataInfoNode> tempStorageQueue;
+    /*
     // Process the Configuration Data to output to Log
     /////////////////////////////////////////////////////////////////////////
-    strcpy( tempMessage, "Configuration File Data:\n" );
-    LogOutput( logSpecification, tempMessage, logFile );
     for( int i = 1; i < configFile.GetNumberOfProcesses( ) + 1; i++ )
     {
         tempMessage[ 0 ] = '\0';
@@ -152,11 +166,12 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 
     strcat( tempMessage, "\n\nMeta-Data Metrics\n" );
     LogOutput( logSpecification, tempMessage, logFile ); 
-
+    */
     // More Variable Initializations for processing the Meta Data
     /////////////////////////////////////////////////////////////////////////
-    char* tempToken = new char[ 10 ];
-    char* tempToken2 = new char[ 10 ];
+
+    char tempToken[ 10 ];
+    char tempToken2[ 10 ];
     char tempMetaDataCode = '\0';
     char tempMetaDataDescriptor[ 30 ];
     int tempNumberOfCycles = 0;
@@ -165,6 +180,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 
     // Begin processing Meta Data
     /////////////////////////////////////////////////////////////////////////
+
     while( !aQueueOfMetaData.empty( ) )
     {
         tempMetaDataCode = '\0';
@@ -175,12 +191,12 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 
         // Load Meta Data info into buffers
         /////////////////////////////////////////////////////////////////////
-        tempMetaDataCode = aQueueOfMetaData.front( ).MetaDataCode;
+        tempMetaDataCode = aQueueOfMetaData.front( ).aMetaDataCode;
         strcpy(    tempMetaDataDescriptor, 
-                    aQueueOfMetaData.front( ).MetaDataDescriptor );
+                    aQueueOfMetaData.front( ).aMetaDataDescriptor );
         tempNumberOfCycles = aQueueOfMetaData.
-                                            front( ).NumberOfCycles;
-        tempErrorCode = aQueueOfMetaData.front( ).ErrorCode;
+                                            front( ).aNumberOfCycles;
+        tempErrorCode = aQueueOfMetaData.front( ).aErrorCode;
 
         if( tempErrorCode != 0 )
         {
@@ -195,8 +211,17 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
                 if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                        ;
-                    else
+                    {
+					    // Move PCB to READY mode
+					    if( state.processState == 2 )
+					    {
+					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+					    	strcpy( tempMessage, " - OS: perparing process 1\n" );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	state.processState++;
+					    }
+                    }
+                    else									
                         tempErrorCode = 51;
                 }
                 else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
@@ -212,14 +237,32 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
                 if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                        ;
+                    {
+					    // Move PCB to RUNNING mode
+					    if( state.processState == 3 )
+					    {
+					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+					    	strcpy( tempMessage, " - OS starting process 1\n" );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	state.processState++;
+					    }
+                    }
                     else
                         tempErrorCode = 51;
                 }
                 else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
                 {
                     if( tempNumberOfCycles == 0 )
-                        ;
+                    {
+              			// Move PCB to EXIT mode
+					    if( state.processState == 3 )
+					    {
+					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+					    	strcpy( tempMessage, " - OS removing process 1\n" );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	state.processState = 5;
+					    }	
+                    }
                     else
                         tempErrorCode = 51;
                 }
@@ -229,8 +272,20 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
                 break;
             case 'P':
                 if( strcmp( tempMetaDataDescriptor, "run" ) == 0 )
+                {
                     tempProcessRunTime = tempNumberOfCycles * 
                                     configFile.GetProcessValue( "processor" );
+				    if( state.processState == 3 )
+				    {
+				    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+				    	strcpy( tempMessage, " - start processing action\n" );
+				    	LogOutput( logSpecification, tempMessage, logFile);
+				    	
+				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
+				    	strcpy( tempMessage, " - end processing action\n" );
+				    	LogOutput( logSpecification, tempMessage, logFile);
+				    }	
+                }
                 else
                     tempErrorCode = 51;
 
@@ -295,7 +350,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
 
         // Prepare the line for the Log output
         /////////////////////////////////////////////////////////////////////
-        if( tempErrorCode == 0 )
+        /*if( tempErrorCode == 0 )
         {
             if( tempProcessRunTime > 0 )
             {
@@ -323,6 +378,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
         {
             ProcessErrorCode( logSpecification, tempErrorCode, logFile );
         }
+        */
 
         tempStorageQueue.push( ( aQueueOfMetaData.front( ) ) );
         aQueueOfMetaData.pop( );
@@ -337,8 +393,6 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile )
         aQueueOfMetaData.push( ( tempStorageQueue.front( ) ) );
         tempStorageQueue.pop( ); 
     }
-
-    delete tempToken;
 } // End ParseData
 
 /**<
@@ -421,17 +475,13 @@ bool MetaDataInfo::ParseLine( char lineToParse[ ] )
             tempErrorCode = 52;
         }
                 
-        tempNode.MetaDataCode = tempMetaDataCode;
-        tempNode.MetaDataDescriptor = tempMetaDataDescriptor;
-        tempNode.NumberOfCycles = tempNumberOfCycles;
-        tempNode.ErrorCode = tempErrorCode;
-
-        cout << tempNode.MetaDataCode<< endl;
+        tempNode.aMetaDataCode = tempMetaDataCode;
+        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
+        tempNode.aNumberOfCycles = tempNumberOfCycles;
+        tempNode.aErrorCode = tempErrorCode;
 
         aQueueOfMetaData.push( tempNode );
         
-        cout << "dad"<< aQueueOfMetaData.front( ).MetaDataCode << endl;
-
         tempHelperPtr = tempHelperPtrAnchor;
         strcpy( tempHelperPtr, tempHelper );
         tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
@@ -445,6 +495,8 @@ bool MetaDataInfo::ParseLine( char lineToParse[ ] )
 
         iterator++;
     }
+
+    delete tempHelperPtrAnchor;
 
     tempHelperPtr = NULL;
     tempHelperPtrAnchor = NULL;
@@ -658,5 +710,48 @@ void MetaDataInfo::ReverseString( char* string, int size )
         string[ size - i ] = buffer;
     }
 } // end ReverseString
+void MetaDataInfo::LogTime( 	char logSpecification, 
+                        		double time,
+                        		ofstream& logFile )
+{
+    if( logSpecification == 'M' 
+        || logSpecification == 'B' 
+        || logSpecification == 'm' )
+    {
+        cout << time;
+    }
+    if( logSpecification == 'F' || logSpecification == 'B' )
+    {
+        logFile << time;
+    }
+}
+double MetaDataInfo::timer( long long timeToWait, timeval& initTime )
+{
+	double time = 0;
+
+	timeval start, end;
+	gettimeofday( &start, NULL );
+	gettimeofday( &end, NULL );
 
 
+	while ( ( end.tv_usec - start.tv_usec ) < timeToWait )
+		gettimeofday( &end, NULL );
+
+
+	gettimeofday( &end, NULL );
+
+	int sec, usec;
+
+	sec =  end.tv_sec - initTime.tv_sec;
+	usec = end.tv_usec - initTime.tv_usec; 
+
+	if( usec < 0 )
+	{
+		usec += 1000000;
+		sec -= 1;
+	}
+
+	time += (double) ( sec + (double)usec/1000000 );
+
+	return time;
+}
