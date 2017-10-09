@@ -1,8 +1,4 @@
-#ifndef MEM_FUNC_C
-#define MEM_FUNC_C
-
-#include <time.h>
-#include <stdlib.h>
+#include "MemoryFunction.hh"
 
 unsigned int allocateMemory( int totMem )
 {
@@ -17,5 +13,3 @@ unsigned int allocateMemory( int totMem )
 
 	return address;
 }
-
-#endif

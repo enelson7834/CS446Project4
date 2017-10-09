@@ -25,6 +25,7 @@
 #include <queue>
 #include <iomanip>
 #include <sys/time.h>
+#include <pthread.h>
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
@@ -32,6 +33,11 @@
 
 #include "ConfigFileInput.hh"
 #include "PCB.hh"
+
+/////////////////////////////////////////////////////////////////////////////
+// Namespace Declaration
+/////////////////////////////////////////////////////////////////////////////
+using namespace std;
 
 /////////////////////////////////////////////////////////////////////////////
 // Struct Definition
@@ -61,6 +67,16 @@ struct MetaDataInfoNode
 
 };
 
+struct thread_data
+{
+    timeval initTime; 
+    int tempProcessRunTime;
+    double executionTime;
+};
+
+void* threadInput( void* threadarg );
+void* threadOutput( void* threadarg );
+
 /////////////////////////////////////////////////////////////////////////////
 // Class Definition
 /////////////////////////////////////////////////////////////////////////////
@@ -71,8 +87,7 @@ class MetaDataInfo
         ~MetaDataInfo( );
 
         void ProcessData(   ConfigFileInput& configFile,
-                            PCB& state,
-                            timeval& initTime );
+                            PCB& state );
     protected:
         bool ParseLine( char lineToParse[ ] );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );
@@ -86,9 +101,11 @@ class MetaDataInfo
         void LogTime( char logSpecification, 
                                     double time,
                                     ofstream& logFile );      
-        void itoa( int inputValue, char* outputString, int base );
+        char* itoa( int inputValue, char* outputString, int base );
         void ReverseString( char* string, int size );
-        double timer( long long timeToWait, timeval& initTime );
+        double timer( long timeToWait, timeval& time );
+        long getWaitTime( timeval& start );
+    private:
         queue<MetaDataInfoNode> aQueueOfMetaData;
 };
 

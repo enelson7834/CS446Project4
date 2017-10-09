@@ -6,10 +6,10 @@ CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 
 Sim01: $(OBJS)
-	$(CC) $(LFLAGS) ConfigFileInput.o MetaDataInfo.o main.o -o Sim01
+	$(CC) $(LFLAGS) $(OBJS) -o Sim01 -lpthread
 ConfigFileInput.o: ConfigFileInput.hh ConfigFileInput.cc
 	$(CC) $(CFLAGS) ConfigFileInput.cc
-MetaDataInfo.o: MetaDataInfo.hh MetaDataInfo.cc ConfigFileInput.hh PCB.hh
+MetaDataInfo.o: MetaDataInfo.hh MetaDataInfo.cc ConfigFileInput.hh PCB.hh 
 	$(CC) $(CFLAGS) MetaDataInfo.cc
 main.o:	main.cpp ConfigFileInput.hh  MetaDataInfo.hh PCB.hh
 	$(CC) $(CFLAGS) main.cpp

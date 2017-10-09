@@ -301,6 +301,22 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
            tempProcessName[ i ] = tolower( tempProcessName[ i ] );
         }
 
+        if( strncmp( lineToParse, "System Memory", 13 ) == 0 )
+        {
+            if( strstr( lineToParse, "kbytes" ) != NULL )
+            {
+                tempProcessValue *= 1000;
+            }
+            else if( strstr( lineToParse, "Mbytes" ) != NULL )
+            {
+                tempProcessValue *= 1000000;
+            }
+            else if( strstr( lineToParse, "Gbytes" ) != NULL )
+            {
+                tempProcessValue *= 1000000000;
+            }
+        }
+
         strcpy( tempNode.aProcessName, tempProcessName );
         tempNode.aProcessValue = tempProcessValue;
 

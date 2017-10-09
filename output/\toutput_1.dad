@@ -1,23 +1,44 @@
-1e-06 - Simulator program starting
-5.6e-05 - OS: perparing process 1
-7.9e-05 - OS starting process 1
-M(allocate)12 - 420 ms
-P(run)4 - 40 ms
-I(hard drive)14 - 700 ms
-O(printer)10 - 5000 ms
-P(run)9 - 90 ms
-P(run)9 - 90 ms
-I(keyboard)5 - 5000 ms
-P(run)14 - 140 ms
-O(hard drive)9 - 450 ms
-M(allocate)4 - 140 ms
-O(hard drive)7 - 350 ms
-P(run)8 - 80 ms
-I(hard drive)12 - 600 ms
-O(printer)12 - 6000 ms
-P(run)11 - 110 ms
-P(run)1 - 10 ms
-O(printer)5 - 2500 ms
-I(monitor)5 - 125 ms
-P(run)11 - 110 ms
-P(run)14 - 140 ms
+2e-06 - Simulator program starting
+9.2e-05 - OS: perparing process 1
+0.000117 - OS starting process 1
+0.000137 - Process 1: allocating memory
+0.420156 - Process 1: memory allocated at 0x3ae3
+0.420248 - Process 1: start processing action
+0.460272 - Process 1: end processing action
+0.460407 - Process 1: start hard drive input
+1.16057 - Process 1: end hard drive input
+1.16073 - Process 1: start printer output
+6.16078 - Process 1: end printer output
+6.16094 - Process 1: start processing action
+6.25099 - Process 1: end processing action
+6.2511 - Process 1: start processing action
+6.34113 - Process 1: end processing action
+6.34124 - Process 1: start keyboard input
+11.3413 - Process 1: end keyboard input
+11.3414 - Process 1: start processing action
+11.4814 - Process 1: end processing action
+11.4815 - Process 1: start hard drive output
+11.9316 - Process 1: end hard drive output
+11.9317 - Process 1: allocating memory
+12.0717 - Process 1: memory allocated at 0x11b6
+12.0718 - Process 1: start hard drive output
+12.4218 - Process 1: end hard drive output
+12.422 - Process 1: start processing action
+12.502 - Process 1: end processing action
+12.5021 - Process 1: start hard drive input
+13.1021 - Process 1: end hard drive input
+13.1022 - Process 1: start printer output
+19.1023 - Process 1: end printer output
+19.1024 - Process 1: start processing action
+19.2124 - Process 1: end processing action
+19.2125 - Process 1: start processing action
+19.2225 - Process 1: end processing action
+19.2242 - Process 1: start printer output
+21.7243 - Process 1: end printer output
+21.7244 - Process 1: start monitor input
+21.8495 - Process 1: end monitor input
+21.8496 - Process 1: start processing action
+21.9596 - Process 1: end processing action
+21.9597 - Process 1: start processing action
+22.0997 - Process 1: end processing action
+22.0998 - OS removing process 1

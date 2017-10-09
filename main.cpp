@@ -13,11 +13,9 @@ int main( int argv, char* argc[ ] )
 
     ConfigFileInput ConfigFileTest( argc[ 1 ] );
 
-    timeval initTime;
-    gettimeofday( &initTime, NULL );
     MetaDataInfo MetaDataFileTest( 	ConfigFileTest.GetFilePath( ) );
 
-    MetaDataFileTest.ProcessData( ConfigFileTest, state, initTime );
+    MetaDataFileTest.ProcessData( ConfigFileTest, state );
 
 	return 0;
 }

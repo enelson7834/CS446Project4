@@ -7,13 +7,114 @@
 */
 
 #include "MetaDataInfo.hh"
+#include "MemoryFunction.hh"
+
+// Thread Functions
+/////////////////////////////////////////////////////////////////////////////
+void* threadInput( void* threadarg )
+{
+	struct thread_data* data = (struct thread_data*) threadarg;
+	
+	double time = 0;
+
+	timeval start, end;
+	gettimeofday( &start, NULL );
+
+	while ( time < data->tempProcessRunTime )
+	{
+		timeval current;
+		gettimeofday( &current, NULL );
+
+		int sec, usec;
+
+		sec =  current.tv_sec - start.tv_sec;
+		usec = current.tv_usec - start.tv_usec; 
+
+		if( usec < 0 )
+		{
+			usec += 1000000;
+			sec -= 1;
+		}
+
+		time = (long)( sec*1000000 + (double)usec ); ;
+	}
+
+	time = 0;
+	gettimeofday( &end, NULL );
+
+	int sec, usec;
+
+	sec =  end.tv_sec - data->initTime.tv_sec;
+	usec = end.tv_usec - data->initTime.tv_usec; 
+
+	if( usec < 0 )
+	{
+		usec += 1000000;
+		sec -= 1;
+	}
+
+	time += (double) ( sec + (double)usec/1000000 );
+
+	data->executionTime = time;
+
+	pthread_exit( NULL );
+}
+
+void* threadOutput( void* threadarg )
+{
+	struct thread_data* data = (struct thread_data*) threadarg;
+	
+	double time = 0;
+
+	timeval start, end;
+	gettimeofday( &start, NULL );
+
+	while ( time < data->tempProcessRunTime )
+	{
+		timeval current;
+		gettimeofday( &current, NULL );
+
+		int sec, usec;
+
+		sec =  current.tv_sec - start.tv_sec;
+		usec = current.tv_usec - start.tv_usec; 
+
+		if( usec < 0 )
+		{
+			usec += 1000000;
+			sec -= 1;
+		}
+
+		time = (long)( sec*1000000 + (double)usec ); ;
+	}
+
+	time = 0;
+	gettimeofday( &end, NULL );
+
+	int sec, usec;
+
+	sec =  end.tv_sec - data->initTime.tv_sec;
+	usec = end.tv_usec - data->initTime.tv_usec; 
+
+	if( usec < 0 )
+	{
+		usec += 1000000;
+		sec -= 1;
+	}
+
+	time += (double) ( sec + (double)usec/1000000 );
+
+	data->executionTime = time;
+
+	pthread_exit( NULL );
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Constructors/Deconstructors
 /////////////////////////////////////////////////////////////////////////////
 MetaDataInfo::MetaDataInfo( char* fileName )
 {
-	cout << fixed;
+	cout << fixed << showpoint;
 	cout << setprecision( 6 ); 
     if( strstr( fileName, ".mdf" ) == NULL )
     {
@@ -62,8 +163,7 @@ Processes the data from the Meta Data file and logs it to appropriate output
 @return void
 ****************************************************************************/
 void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
-								PCB& state,
-								timeval& initTime )
+								PCB& state )
 {
     // Variable declarations/initialization
     /////////////////////////////////////////////////////////////////////////
@@ -91,6 +191,8 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
     }
 
     ofstream logFile( configFile.GetLogFilePath( ) );
+    logFile << fixed << showpoint;
+    logFile << setprecision( 6 );
     if( !logFile.good( ) )
     {
         cout << "Error creating LogFile. Please try again." << endl;
@@ -104,15 +206,16 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
     char tempProcessName[ 30 ];
     char tempProcessValue[ 5 ];
 	*/
-	
+	timeval initTime, prevTime;
     gettimeofday( &initTime, NULL );
 
     if( state.processState == 1 )
     {
-    	LogTime( logSpecification, timer( 1, initTime ), logFile );
     	strcpy( tempMessage, " - Simulator program starting\n" );
+    	LogTime( logSpecification, timer( 0, initTime ), logFile );
     	LogOutput( logSpecification, tempMessage, logFile);
     	state.processState++;
+    	gettimeofday( &prevTime, NULL );
     }
 
     queue<MetaDataInfoNode> tempStorageQueue;
@@ -170,13 +273,19 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
     // More Variable Initializations for processing the Meta Data
     /////////////////////////////////////////////////////////////////////////
 
-    char tempToken[ 10 ];
-    char tempToken2[ 10 ];
+    char tempToken[ 20 ];
+    //char tempToken2[ 10 ];
+
     char tempMetaDataCode = '\0';
     char tempMetaDataDescriptor[ 30 ];
     int tempNumberOfCycles = 0;
     int tempProcessRunTime = 0;
     int tempErrorCode = 0;
+    int threadNum = 0;
+	int totalMemory = configFile.GetProcessValue( "system memory" );
+	
+	pthread_t threads[ 40 ];
+	struct thread_data data[ 40 ];
 
     // Begin processing Meta Data
     /////////////////////////////////////////////////////////////////////////
@@ -215,10 +324,18 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 					    // Move PCB to READY mode
 					    if( state.processState == 2 )
 					    {
-					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
-					    	strcpy( tempMessage, " - OS: perparing process 1\n" );
+					    	strcpy( tempMessage, " - OS: perparing process 1\n" );		
+					    	LogTime( logSpecification, (double) timer( 0, initTime ) , logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	state.processState++;
+				    	   	gettimeofday( &prevTime, NULL );
+					    }
+						// Move PCB to RUNNING mode
+					    if( state.processState == 3 )
+					    {
+					    	strcpy( tempMessage, " - OS starting process 1\n" );
+					    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+					    	LogOutput( logSpecification, tempMessage, logFile);
 					    }
                     }
                     else									
@@ -238,14 +355,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
                 {
                     if( tempNumberOfCycles == 0 )
                     {
-					    // Move PCB to RUNNING mode
-					    if( state.processState == 3 )
-					    {
-					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
-					    	strcpy( tempMessage, " - OS starting process 1\n" );
-					    	LogOutput( logSpecification, tempMessage, logFile);
-					    	state.processState++;
-					    }
+                    	;
                     }
                     else
                         tempErrorCode = 51;
@@ -257,8 +367,8 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
               			// Move PCB to EXIT mode
 					    if( state.processState == 3 )
 					    {
-					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
 					    	strcpy( tempMessage, " - OS removing process 1\n" );
+					    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	state.processState = 5;
 					    }	
@@ -274,16 +384,17 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
                 if( strcmp( tempMetaDataDescriptor, "run" ) == 0 )
                 {
                     tempProcessRunTime = tempNumberOfCycles * 
-                                    configFile.GetProcessValue( "processor" );
+                                    configFile.GetProcessValue( "processor" ) * 1000;
 				    if( state.processState == 3 )
 				    {
-				    	LogTime( logSpecification, timer( 0, initTime ), logFile );
-				    	strcpy( tempMessage, " - start processing action\n" );
+				    	strcpy( tempMessage, " - Process 1: start processing action\n" );
+				    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
 				    	LogOutput( logSpecification, tempMessage, logFile);
 				    	
+				    	strcpy( tempMessage, " - Process 1: end processing action\n" );
 				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
-				    	strcpy( tempMessage, " - end processing action\n" );
 				    	LogOutput( logSpecification, tempMessage, logFile);
+				    	gettimeofday( &prevTime, NULL );
 				    }	
                 }
                 else
@@ -298,8 +409,32 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
                         tempErrorCode = 41;
                     else
                         tempProcessRunTime = tempNumberOfCycles * 
-                                    configFile.
-                                    GetProcessValue( tempMetaDataDescriptor );
+                                    configFile.GetProcessValue( tempMetaDataDescriptor ) * 1000;
+                    if( state.processState == 3 )
+                    {
+                    	data[ threadNum ].initTime = initTime;
+                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
+						
+						strcpy( tempMessage, " - Process 1: start " );
+						strcat( tempMessage, tempMetaDataDescriptor );
+						strcat( tempMessage, " input\n" );
+						LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+						LogOutput( logSpecification, tempMessage, logFile);
+                    	
+						state.processState = 4;
+                    	pthread_create( &threads[ threadNum ], NULL, threadInput, ( void* ) &data[ threadNum ] );
+                    	pthread_join( threads[ threadNum ], NULL );
+                    	state.processState = 3;
+                    	
+						strcpy( tempMessage, " - Process 1: end " );
+						strcat( tempMessage, tempMetaDataDescriptor );
+						strcat( tempMessage, " input\n" );
+                    	LogTime( logSpecification, data[ threadNum ].executionTime, logFile );
+						LogOutput( logSpecification, tempMessage, logFile);
+						gettimeofday( &prevTime, NULL );
+
+                    	threadNum++;
+                    }
                 }
                 else
                     tempErrorCode = 41;
@@ -313,8 +448,33 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
                         tempErrorCode = 41;
                     else
                         tempProcessRunTime = tempNumberOfCycles * 
-                                    configFile.
-                                    GetProcessValue( tempMetaDataDescriptor );
+                                    configFile.GetProcessValue( tempMetaDataDescriptor ) * 1000;
+
+                    if( state.processState == 3 )
+                    {
+                    	data[ threadNum ].initTime = initTime;
+                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
+						
+						strcpy( tempMessage, " - Process 1: start " );
+						strcat( tempMessage, tempMetaDataDescriptor );
+						strcat( tempMessage, " output\n" );
+						LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+						LogOutput( logSpecification, tempMessage, logFile);
+                    	
+						state.processState = 4;
+                    	pthread_create( &threads[ threadNum ], NULL, threadInput, ( void* ) &data[ threadNum ] );
+                    	pthread_join( threads[ threadNum ], NULL );
+                    	state.processState = 3;
+                    	
+						strcpy( tempMessage, " - Process 1: end " );
+						strcat( tempMessage, tempMetaDataDescriptor );
+						strcat( tempMessage, " output\n" );
+                    	LogTime( logSpecification, data[ threadNum ].executionTime, logFile );
+						LogOutput( logSpecification, tempMessage, logFile);
+						gettimeofday( &prevTime, NULL );
+
+                    	threadNum++;
+                    }
                 }
                 else
                     tempErrorCode = 41;
@@ -325,19 +485,45 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
                 {
                     if( tempNumberOfCycles > 0 )
                         tempProcessRunTime = tempNumberOfCycles *
-                                    configFile.
-                                    GetProcessValue( "memory" );
+                                    configFile.GetProcessValue( "memory" ) * 1000;
                     else
                         tempErrorCode = 51;
+
+                    if( state.processState == 3 )
+				    {
+				    	strcpy( tempMessage, " - Process 1: start memory bocking\n" );
+				    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+				    	LogOutput( logSpecification, tempMessage, logFile);
+				    	
+				    	strcpy( tempMessage, " - Process 1: end memory blocking\n" );
+				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
+				    	LogOutput( logSpecification, tempMessage, logFile);
+				    	gettimeofday( &prevTime, NULL );
+				    }
                 }
                 else if( strcmp( tempMetaDataDescriptor, "allocate" ) == 0 )
                 {
                     if( tempNumberOfCycles > 0 )
                         tempProcessRunTime = tempNumberOfCycles *
-                                        configFile.
-                                        GetProcessValue( "memory" );
+                                        configFile.GetProcessValue( "memory" ) * 1000;
                     else
+                    {
                         tempErrorCode = 51;
+                        break;
+                    }
+               		if( state.processState == 3 )
+				    {
+				    	strcpy( tempMessage, " - Process 1: allocating memory\n" );
+				    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+				    	LogOutput( logSpecification, tempMessage, logFile);
+				    	
+				    	strcpy( tempMessage, " - Process 1: memory allocated at " );
+				    	strcat( tempMessage, itoa( allocateMemory( totalMemory ), tempToken, 16 ) );
+				    	strcat( tempMessage, "\n" );
+				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
+				    	LogOutput( logSpecification, tempMessage, logFile);
+				    	gettimeofday( &prevTime, NULL );
+				    }
                 }
                 else
                     tempErrorCode = 41;
@@ -348,10 +534,18 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 
         }
 
+        if( state.processState == 5 )
+	    {
+	    	strcpy( tempMessage, " - Simulator program ending\n" );
+	    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+	    	LogOutput( logSpecification, tempMessage, logFile);
+	    	state.processState = 5;
+	    }
+
         // Prepare the line for the Log output
         /////////////////////////////////////////////////////////////////////
-        /*if( tempErrorCode == 0 )
-        {
+        if( tempErrorCode != 0 )
+        /*{
             if( tempProcessRunTime > 0 )
             {
                 itoa( tempProcessRunTime, tempToken, 10 );
@@ -374,15 +568,15 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
                 ;
             }
         }
-        else
+        else*/
         {
             ProcessErrorCode( logSpecification, tempErrorCode, logFile );
         }
-        */
 
         tempStorageQueue.push( ( aQueueOfMetaData.front( ) ) );
         aQueueOfMetaData.pop( );
     }
+
 
     logFile.close( );
 
@@ -655,7 +849,7 @@ Helper function to convert from an integer to a string
 @param  base The base to convert to. i.e. 10 = decimal, 16 = hexadecimal.
 @return void
 ****************************************************************************/ 
-void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
+char* MetaDataInfo::itoa( int inputValue, char* outputString, int base )
 {
     int i = 0;
     bool isNegative = false;
@@ -664,7 +858,7 @@ void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
     {
         outputString[ i++ ] = '0';
         outputString[ i ] = '\0';
-        return;
+        return outputString;
     }
     else if( inputValue < 0 )
     {
@@ -675,8 +869,18 @@ void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
     while( inputValue != 0 )
     {
         int temp = inputValue % base;
-        outputString[i++] = ( temp > 9 )? ( temp - 10 ) + 'a' : temp + '0';
+        outputString[ i++ ] = ( temp > 9 )? ( temp - 10 ) + 'a' : temp + '0';
         inputValue /= base;
+    }
+
+    if( base == 16 )
+    {
+    	while( i < 8 )
+    	{
+    		outputString[ i++ ] = '0';
+    	}
+    	outputString[ i++ ] = 'x';
+    	outputString[ i++ ] = '0';
     }
 
     if( isNegative )
@@ -688,7 +892,7 @@ void MetaDataInfo::itoa( int inputValue, char* outputString, int base )
 
     ReverseString( outputString, i );
 
-    return;
+    return outputString;
 } // end itoa
 
 /**<
@@ -725,17 +929,17 @@ void MetaDataInfo::LogTime( 	char logSpecification,
         logFile << time;
     }
 }
-double MetaDataInfo::timer( long long timeToWait, timeval& initTime )
+double MetaDataInfo::timer( long timeToWait, timeval& initTime )
 {
 	double time = 0;
 
 	timeval start, end;
 	gettimeofday( &start, NULL );
-	gettimeofday( &end, NULL );
 
-
-	while ( ( end.tv_usec - start.tv_usec ) < timeToWait )
-		gettimeofday( &end, NULL );
+	while ( getWaitTime( start ) < timeToWait )
+	{
+		;
+	}
 
 
 	gettimeofday( &end, NULL );
@@ -754,4 +958,23 @@ double MetaDataInfo::timer( long long timeToWait, timeval& initTime )
 	time += (double) ( sec + (double)usec/1000000 );
 
 	return time;
+}
+
+long MetaDataInfo::getWaitTime( timeval& start )
+{
+	timeval current;
+	gettimeofday( &current, NULL );
+
+	int sec, usec;
+
+	sec =  current.tv_sec - start.tv_sec;
+	usec = current.tv_usec - start.tv_usec; 
+
+	if( usec < 0 )
+	{
+		usec += 1000000;
+		sec -= 1;
+	}
+
+	return (long)( sec*1000000 + (double)usec ); 
 }
