@@ -1,0 +1,39 @@
+\hypertarget{_config_file_input_8hh}{}\section{Config\+File\+Input.\+hh File Reference}
+\label{_config_file_input_8hh}\index{Config\+File\+Input.\+hh@{Config\+File\+Input.\+hh}}
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$cstring$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$list$>$}\\*
+Include dependency graph for Config\+File\+Input.\+hh\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_config_file_input_node}{Config\+File\+Input\+Node}
+\item 
+class \hyperlink{class_config_file_input}{Config\+File\+Input}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define {\bfseries F\+I\+L\+E\+\_\+\+N\+A\+M\+E\+\_\+\+M\+A\+X\+\_\+\+L\+E\+N\+G\+TH}~30\hypertarget{_config_file_input_8hh_a362b6be1bbf34c4d98739b9196fbe148}{}\label{_config_file_input_8hh_a362b6be1bbf34c4d98739b9196fbe148}
+
+\item 
+\#define {\bfseries S\+T\+R\+\_\+\+M\+A\+X\+\_\+\+L\+E\+N\+G\+TH}~300\hypertarget{_config_file_input_8hh_ada55f6bc0463a1a51589c6f6755fd29a}{}\label{_config_file_input_8hh_ada55f6bc0463a1a51589c6f6755fd29a}
+
+\item 
+\#define {\bfseries L\+O\+G\+\_\+\+F\+I\+L\+E\+\_\+\+N\+A\+M\+E\+\_\+\+M\+A\+X\+\_\+\+L\+E\+N\+G\+TH}~30\hypertarget{_config_file_input_8hh_ae580f492708a546d4bd0cbecda9a2d12}{}\label{_config_file_input_8hh_ae580f492708a546d4bd0cbecda9a2d12}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Eugene Nelson  The header file for the \hyperlink{class_config_file_input}{Config\+File\+Input} class. 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 Eugene Nelson Originally developed ( 9 -\/ 19 -\/ 17 ) 
+\end{DoxyVersion}
