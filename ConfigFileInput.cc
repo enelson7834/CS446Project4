@@ -109,6 +109,31 @@ char* ConfigFileInput::GetProcessName( const int position )
     return it->aProcessName;
 } // end GetProcessName
 
+int GetProcessQuantity( const char processName[ ] )
+{
+    list<ConfigFileInputNode>::iterator it = aListOfProcesses.begin( );
+    while( strcmp( processName, 
+            it->aProcessName ) != 0
+            && it != aListOfProcesses.end( ) )
+    {
+        ++it;
+    }
+    return it->aQuantity;
+}
+
+
+ConfigFileInputNode* ConfigFileInput::GetProcess( const char processName[ ] )
+{
+    list<ConfigFileInputNode>::iterator it = aListOfProcesses.begin( );
+    while( strcmp( processName, 
+            it->aProcessName ) != 0
+            && it != aListOfProcesses.end( ) )
+    {
+        ++it;
+    }
+    return &(*it);
+}
+
 char ConfigFileInput::GetLogOutputSpecification( )
 {
     return aLogOutputSpecification;
@@ -253,6 +278,27 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
     } // end getting the file path
     else if( strncmp( lineToParse, "End Sim", 7 ) == 0 )
     {
+        return true;
+    }
+    else if( strstr( lineToParse, " qantity:" ) != NULL )
+    {
+        char tempProcessName[ 30 ] = {'\0'};
+        char* tempValueToken;
+
+        tempValueToken = strpbrk( lineToParse, ":" );
+        RemoveSpaces( tempValueToken );
+        AdjustLineElements( tempValueToken , 0 );
+
+        strcpy( tempProcessName, lineToParse );
+        strstr( tempProcessName, " quantity:" )[0] = '\0';
+
+        for( unsigned int i = 0; i < strlen( tempProcessName ); i++ )
+        {
+            tempProcessName[ i ] = tolower( tempProcessName[ i ] );
+        }
+
+        GetProcess( tempProcessName )->aQuantity = atoi( tempValueToken );
+
         return true;
     }
 

@@ -39,10 +39,12 @@ struct ConfigFileInputNode
 {
     char   aProcessName[ STR_MAX_LENGTH ];
     int    aProcessValue;
+    int    aQuantity;
     
     ConfigFileInputNode( )
     {
-        ;
+        aProcessValue = -1;
+        aQuantity = 1;
     }
     ConfigFileInputNode( const ConfigFileInputNode& copyNode )
     {
@@ -68,6 +70,8 @@ class ConfigFileInput
         int GetNumberOfProcesses( );
         int GetProcessValue( const char processName[ ] );
         char* GetProcessName( const int position );
+        int GetProcessQuantity( const char processName[ ] );
+        ConfigFileInputNode* GetProcess( const char processName[ ] );
 
         char GetLogOutputSpecification( );
         char* GetFilePath( );
@@ -81,7 +85,6 @@ class ConfigFileInput
         char aLogOutputSpecification;
         char aLogFilePath[ LOG_FILE_NAME_MAX_LENGTH ];
         list<ConfigFileInputNode> aListOfProcesses;
-
 };
 
 #endif
