@@ -14,87 +14,36 @@
 void* threadInput( void* threadarg )
 {
 	struct thread_data* data = (struct thread_data*) threadarg;
-	
-	double time = 0;
-
-	timeval start, end;
-	gettimeofday( &start, NULL );
-
-	while ( time < data->tempProcessRunTime )
-	{
-		timeval current;
-		gettimeofday( &current, NULL );
-
-		int sec, usec;
-
-		sec =  current.tv_sec - start.tv_sec;
-		usec = current.tv_usec - start.tv_usec; 
-
-		if( usec < 0 )
-		{
-			usec += 1000000;
-			sec -= 1;
-		}
-
-		time = (long)( sec*1000000 + (double)usec ); ;
-	}
-
-	time = 0;
-	gettimeofday( &end, NULL );
-
-	int sec, usec;
-
-	sec =  end.tv_sec - data->initTime.tv_sec;
-	usec = end.tv_usec - data->initTime.tv_usec; 
-
-	if( usec < 0 )
-	{
-		usec += 1000000;
-		sec -= 1;
-	}
-
-	time += (double) ( sec + (double)usec/1000000 );
-
-	data->executionTime = time;
-
+	data->executionTime = timer( data->tempProcessRunTime, data->initTime );
 	pthread_exit( NULL );
 }
 
 void* threadOutput( void* threadarg )
 {
 	struct thread_data* data = (struct thread_data*) threadarg;
-	
+	data->executionTime = timer( data->tempProcessRunTime, data->initTime );
+	pthread_exit( NULL );
+}
+
+double timer( long timeToWait, timeval& initTime )
+{
 	double time = 0;
 
 	timeval start, end;
 	gettimeofday( &start, NULL );
 
-	while ( time < data->tempProcessRunTime )
+	while ( getWaitTime( start ) < timeToWait )
 	{
-		timeval current;
-		gettimeofday( &current, NULL );
-
-		int sec, usec;
-
-		sec =  current.tv_sec - start.tv_sec;
-		usec = current.tv_usec - start.tv_usec; 
-
-		if( usec < 0 )
-		{
-			usec += 1000000;
-			sec -= 1;
-		}
-
-		time = (long)( sec*1000000 + (double)usec ); ;
+		;
 	}
 
-	time = 0;
+
 	gettimeofday( &end, NULL );
 
 	int sec, usec;
 
-	sec =  end.tv_sec - data->initTime.tv_sec;
-	usec = end.tv_usec - data->initTime.tv_usec; 
+	sec =  end.tv_sec - initTime.tv_sec;
+	usec = end.tv_usec - initTime.tv_usec; 
 
 	if( usec < 0 )
 	{
@@ -104,11 +53,45 @@ void* threadOutput( void* threadarg )
 
 	time += (double) ( sec + (double)usec/1000000 );
 
-	data->executionTime = time;
-
-	pthread_exit( NULL );
+	return time;
 }
 
+long getWaitTime( timeval& start )
+{
+	timeval current;
+	gettimeofday( &current, NULL );
+
+	int sec, usec;
+
+	sec =  current.tv_sec - start.tv_sec;
+	usec = current.tv_usec - start.tv_usec; 
+
+	if( usec < 0 )
+	{
+		usec += 1000000;
+		sec -= 1;
+	}
+
+	return (long)( sec*1000000 + (double)usec ); 
+}
+
+void wait( semaphore* S )
+{
+	S->m.lock( );
+	while( S->value < 0 )
+	{
+		;
+	}
+}
+
+void signal( semaphore *S )
+{
+	S->m.lock( );
+	S->value++;
+	if( S->value > S->size )
+		S->value = 1;
+	S->m.release( );
+}
 /////////////////////////////////////////////////////////////////////////////
 // Constructors/Deconstructors
 /////////////////////////////////////////////////////////////////////////////
@@ -142,8 +125,6 @@ MetaDataInfo::MetaDataInfo( char* fileName )
         }
         fin.getline( tempLine, 300, '\n' );
     } while( !fin.eof( ) && fileStatus );
-
-    aQueueOfMetaData.pop( );
 
     fin.close();
 } // end Constructor
@@ -206,7 +187,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
     char tempProcessName[ 30 ];
     char tempProcessValue[ 5 ];
 	*/
-	timeval initTime, prevTime;
+	timeval initTime;
     gettimeofday( &initTime, NULL );
 
     if( state.processState == 1 )
@@ -215,7 +196,7 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
     	LogTime( logSpecification, timer( 0, initTime ), logFile );
     	LogOutput( logSpecification, tempMessage, logFile);
     	state.processState++;
-    	gettimeofday( &prevTime, NULL );
+    	
     }
 
     queue<MetaDataInfoNode> tempStorageQueue;
@@ -282,8 +263,18 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
     int tempProcessRunTime = 0;
     int tempErrorCode = 0;
     int threadNum = 0;
-	int totalMemory = configFile.GetProcessValue( "system memory" );
-	
+    unsigned int startMemory = 0;
+	unsigned int totalMemory = configFile.GetSystemMemory( );
+	unsigned int memoryBlockSize = configFile.GetMemoryBlockSize( );
+
+	semaphore S[ 15 ];
+
+	for( int i = 0; i < configFile.GetNumberOfProcesses( ); i++ )
+	{
+		S[ i ].size = configFile.GetProcessQuantity( configFile.GetProcessName( i ) );
+		S[ i ].value = 0; 
+	}
+
 	pthread_t threads[ 40 ];
 	struct thread_data data[ 40 ];
 
@@ -301,238 +292,275 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
         // Load Meta Data info into buffers
         /////////////////////////////////////////////////////////////////////
         tempMetaDataCode = aQueueOfMetaData.front( ).aMetaDataCode;
-        strcpy(    tempMetaDataDescriptor, 
-                    aQueueOfMetaData.front( ).aMetaDataDescriptor );
-        tempNumberOfCycles = aQueueOfMetaData.
-                                            front( ).aNumberOfCycles;
+        strcpy(	tempMetaDataDescriptor, 
+        		aQueueOfMetaData.front( ).aMetaDataDescriptor );
+        tempNumberOfCycles = aQueueOfMetaData.front( ).aNumberOfCycles;
         tempErrorCode = aQueueOfMetaData.front( ).aErrorCode;
-
         if( tempErrorCode != 0 )
+        	;
+        else
         {
-            ProcessErrorCode( logSpecification, tempErrorCode, logFile );
-        }
+	        // Check that code match with appropriate descriptor and get runtime
+	        /////////////////////////////////////////////////////////////////////
+	        switch( tempMetaDataCode )
+	        {
+	            case 'S':
+	                if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
+	                {
+	                    if( tempNumberOfCycles == 0 )
+	                    {
+						    // Move PCB to READY mode
+						    if( state.processState == 2 )
+						    {
+						    	strcpy( tempMessage, " - OS: perparing process 1\n" );		
+						    	LogTime( logSpecification, (double) timer( 0, initTime ) , logFile );
+						    	LogOutput( logSpecification, tempMessage, logFile);
+						    	state.processState++;
+					    	   	
+						    }
+							// Move PCB to RUNNING mode
+						    if( state.processState == 3 )
+						    {
+						    	strcpy( tempMessage, " - OS starting process 1\n" );
+						    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+						    	LogOutput( logSpecification, tempMessage, logFile);
+						    }
+	                    }
+	                    else									
+	                        tempErrorCode = 51;
+	                }
+	                else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
+	                {
+	                    if( tempNumberOfCycles == 0 )
+	                        return;
+	                }
+	                else
+	                    tempErrorCode = 41;
 
-        // Check that code match with appropriate descriptor and get runtime
-        /////////////////////////////////////////////////////////////////////
-        switch( tempMetaDataCode )
-        {
-            case 'S':
-                if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
-                {
-                    if( tempNumberOfCycles == 0 )
-                    {
-					    // Move PCB to READY mode
-					    if( state.processState == 2 )
-					    {
-					    	strcpy( tempMessage, " - OS: perparing process 1\n" );		
-					    	LogTime( logSpecification, (double) timer( 0, initTime ) , logFile );
-					    	LogOutput( logSpecification, tempMessage, logFile);
-					    	state.processState++;
-				    	   	gettimeofday( &prevTime, NULL );
-					    }
-						// Move PCB to RUNNING mode
+	                break;
+	            case 'A':
+	                if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
+	                {
+	                    if( tempNumberOfCycles == 0 )
+	                    {
+	                    	;
+	                    }
+	                    else
+	                        tempErrorCode = 51;
+	                }
+	                else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
+	                {
+	                    if( tempNumberOfCycles == 0 )
+	                    {
+	              			// Move PCB to EXIT mode
+						    if( state.processState == 3 )
+						    {
+						    	strcpy( tempMessage, " - OS removing process 1\n" );
+						    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+						    	LogOutput( logSpecification, tempMessage, logFile);
+						    	state.processState = 5;
+						    }	
+	                    }
+	                    else
+	                        tempErrorCode = 51;
+	                }
+	                else
+	                    tempErrorCode = 41;
+
+	                break;
+	            case 'P':
+	                if( strcmp( tempMetaDataDescriptor, "run" ) == 0 )
+	                {
+	                    tempProcessRunTime = tempNumberOfCycles * 
+	                                    configFile.GetProcessValue( "processor" ) * 1000;
 					    if( state.processState == 3 )
 					    {
-					    	strcpy( tempMessage, " - OS starting process 1\n" );
-					    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+					    	strcpy( tempMessage, " - Process 1: start processing action\n" );
+					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
-					    }
-                    }
-                    else									
-                        tempErrorCode = 51;
-                }
-                else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
-                {
-                    if( tempNumberOfCycles == 0 )
-                        return;
-                }
-                else
-                    tempErrorCode = 41;
-
-                break;
-            case 'A':
-                if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
-                {
-                    if( tempNumberOfCycles == 0 )
-                    {
-                    	;
-                    }
-                    else
-                        tempErrorCode = 51;
-                }
-                else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
-                {
-                    if( tempNumberOfCycles == 0 )
-                    {
-              			// Move PCB to EXIT mode
-					    if( state.processState == 3 )
-					    {
-					    	strcpy( tempMessage, " - OS removing process 1\n" );
-					    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
+					    	
+					    	strcpy( tempMessage, " - Process 1: end processing action\n" );
+					    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
-					    	state.processState = 5;
+					    	
 					    }	
-                    }
-                    else
-                        tempErrorCode = 51;
-                }
-                else
-                    tempErrorCode = 41;
+	                }
+	                else
+	                    tempErrorCode = 51;
 
-                break;
-            case 'P':
-                if( strcmp( tempMetaDataDescriptor, "run" ) == 0 )
-                {
-                    tempProcessRunTime = tempNumberOfCycles * 
-                                    configFile.GetProcessValue( "processor" ) * 1000;
-				    if( state.processState == 3 )
-				    {
-				    	strcpy( tempMessage, " - Process 1: start processing action\n" );
-				    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
-				    	LogOutput( logSpecification, tempMessage, logFile);
-				    	
-				    	strcpy( tempMessage, " - Process 1: end processing action\n" );
-				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
-				    	LogOutput( logSpecification, tempMessage, logFile);
-				    	gettimeofday( &prevTime, NULL );
-				    }	
-                }
-                else
-                    tempErrorCode = 51;
+	                break;
+	            case 'I':
+	                if( tempNumberOfCycles != 0 )
+	                {
+	                    if( configFile.GetProcessValue( tempMetaDataDescriptor ) 
+	                        == -1 )
+	                        tempErrorCode = 41;
+	                    else
+	                        tempProcessRunTime = tempNumberOfCycles * 
+	                                    configFile.GetProcessValue( tempMetaDataDescriptor ) * 1000;
+	                    if( state.processState == 3 )
+	                    {
+	                    	data[ threadNum ].initTime = initTime;
+	                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
+							
+							strcpy( tempMessage, " - Process 1: start " );
+							strcat( tempMessage, tempMetaDataDescriptor );
+							strcat( tempMessage, " input\n" );
+							LogTime( logSpecification, timer( 0, initTime ), logFile );
+							LogOutput( logSpecification, tempMessage, logFile);
+	                    	
+							wait( &S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ] );
+							state.processState = 4;
+	                    	pthread_create( &threads[ threadNum ], NULL, threadInput, ( void* ) &data[ threadNum ] );
+	                    	pthread_join( threads[ threadNum ], NULL );
+	                    	signal( &S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ] );
+	                    	state.processState = 3;
 
-                break;
-            case 'I':
-                if( tempNumberOfCycles != 0 )
-                {
-                    if( configFile.GetProcessValue( tempMetaDataDescriptor ) 
-                        == -1 )
-                        tempErrorCode = 41;
-                    else
-                        tempProcessRunTime = tempNumberOfCycles * 
-                                    configFile.GetProcessValue( tempMetaDataDescriptor ) * 1000;
-                    if( state.processState == 3 )
-                    {
-                    	data[ threadNum ].initTime = initTime;
-                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
-						
-						strcpy( tempMessage, " - Process 1: start " );
-						strcat( tempMessage, tempMetaDataDescriptor );
-						strcat( tempMessage, " input\n" );
-						LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
-						LogOutput( logSpecification, tempMessage, logFile);
-                    	
-						state.processState = 4;
-                    	pthread_create( &threads[ threadNum ], NULL, threadInput, ( void* ) &data[ threadNum ] );
-                    	pthread_join( threads[ threadNum ], NULL );
-                    	state.processState = 3;
-                    	
-						strcpy( tempMessage, " - Process 1: end " );
-						strcat( tempMessage, tempMetaDataDescriptor );
-						strcat( tempMessage, " input\n" );
-                    	LogTime( logSpecification, data[ threadNum ].executionTime, logFile );
-						LogOutput( logSpecification, tempMessage, logFile);
-						gettimeofday( &prevTime, NULL );
+							strcpy( tempMessage, " - Process 1: end " );
+							strcat( tempMessage, tempMetaDataDescriptor );
+							strcat( tempMessage, " input" );
 
-                    	threadNum++;
-                    }
-                }
-                else
-                    tempErrorCode = 41;
+							if( S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ].size > 1 )
+							{
+								strcat( tempMessage, " on " );
+								if( strcmp( tempMetaDataDescriptor, "hard drive" ) == 0 )
+									strcat( tempMessage, "HDD " );
+								else if( strcmp( tempMetaDataDescriptor, "printer" ) == 0 )
+									strcat( tempMessage, "PRNTR " );
+								else if( strcmp( tempMetaDataDescriptor, "keyboard" ) == 0 )
+									strcat( tempMessage, "KBD " );
+								else
+									strcat( tempMessage, "device " );
 
-                break;
-            case 'O':
-                if( tempNumberOfCycles != 0 )
-                {
-                    if( configFile.GetProcessValue( tempMetaDataDescriptor ) 
-                        == -1 )
-                        tempErrorCode = 41;
-                    else
-                        tempProcessRunTime = tempNumberOfCycles * 
-                                    configFile.GetProcessValue( tempMetaDataDescriptor ) * 1000;
+								strcat( tempMessage, 
+									itoa( S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ].value - 1, 
+											tempToken, 10 ) );
 
-                    if( state.processState == 3 )
-                    {
-                    	data[ threadNum ].initTime = initTime;
-                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
-						
-						strcpy( tempMessage, " - Process 1: start " );
-						strcat( tempMessage, tempMetaDataDescriptor );
-						strcat( tempMessage, " output\n" );
-						LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
-						LogOutput( logSpecification, tempMessage, logFile);
-                    	
-						state.processState = 4;
-                    	pthread_create( &threads[ threadNum ], NULL, threadInput, ( void* ) &data[ threadNum ] );
-                    	pthread_join( threads[ threadNum ], NULL );
-                    	state.processState = 3;
-                    	
-						strcpy( tempMessage, " - Process 1: end " );
-						strcat( tempMessage, tempMetaDataDescriptor );
-						strcat( tempMessage, " output\n" );
-                    	LogTime( logSpecification, data[ threadNum ].executionTime, logFile );
-						LogOutput( logSpecification, tempMessage, logFile);
-						gettimeofday( &prevTime, NULL );
+							}
 
-                    	threadNum++;
-                    }
-                }
-                else
-                    tempErrorCode = 41;
+							strcat( tempMessage, "\n" );
 
-                break;
-            case 'M':
-                if( strcmp( tempMetaDataDescriptor, "block" ) == 0 )
-                {
-                    if( tempNumberOfCycles > 0 )
-                        tempProcessRunTime = tempNumberOfCycles *
-                                    configFile.GetProcessValue( "memory" ) * 1000;
-                    else
-                        tempErrorCode = 51;
+	                    	LogTime( logSpecification, data[ threadNum ].executionTime, logFile );
+							LogOutput( logSpecification, tempMessage, logFile);
 
-                    if( state.processState == 3 )
-				    {
-				    	strcpy( tempMessage, " - Process 1: start memory bocking\n" );
-				    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
-				    	LogOutput( logSpecification, tempMessage, logFile);
-				    	
-				    	strcpy( tempMessage, " - Process 1: end memory blocking\n" );
-				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
-				    	LogOutput( logSpecification, tempMessage, logFile);
-				    	gettimeofday( &prevTime, NULL );
-				    }
-                }
-                else if( strcmp( tempMetaDataDescriptor, "allocate" ) == 0 )
-                {
-                    if( tempNumberOfCycles > 0 )
-                        tempProcessRunTime = tempNumberOfCycles *
-                                        configFile.GetProcessValue( "memory" ) * 1000;
-                    else
-                    {
-                        tempErrorCode = 51;
-                        break;
-                    }
-               		if( state.processState == 3 )
-				    {
-				    	strcpy( tempMessage, " - Process 1: allocating memory\n" );
-				    	LogTime( logSpecification, timer( 0, initTime ) - (double) getWaitTime( prevTime )/1000000, logFile );
-				    	LogOutput( logSpecification, tempMessage, logFile);
-				    	
-				    	strcpy( tempMessage, " - Process 1: memory allocated at " );
-				    	strcat( tempMessage, itoa( allocateMemory( totalMemory ), tempToken, 16 ) );
-				    	strcat( tempMessage, "\n" );
-				    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
-				    	LogOutput( logSpecification, tempMessage, logFile);
-				    	gettimeofday( &prevTime, NULL );
-				    }
-                }
-                else
-                    tempErrorCode = 41;
+	                    	threadNum++;
+	                    }
+	                }
+	                else
+	                    tempErrorCode = 41;
 
-                break;
-            default:
-                tempErrorCode = 31;
+	                break;
+	            case 'O':
+	                if( tempNumberOfCycles != 0 )
+	                {
+	                    if( configFile.GetProcessValue( tempMetaDataDescriptor ) 
+	                        == -1 )
+	                        tempErrorCode = 41;
+	                    else
+	                        tempProcessRunTime = tempNumberOfCycles * 
+	                                    configFile.GetProcessValue( tempMetaDataDescriptor ) * 1000;
 
-        }
+	                    if( state.processState == 3 )
+	                    {
+	                    	data[ threadNum ].initTime = initTime;
+	                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
+
+
+							
+							strcpy( tempMessage, " - Process 1: start " );
+							strcat( tempMessage, tempMetaDataDescriptor );
+							strcat( tempMessage, " output\n" );
+							LogTime( logSpecification, timer( 0, initTime ), logFile );
+							LogOutput( logSpecification, tempMessage, logFile);
+	                    	
+	                    	wait( &S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ] );
+							state.processState = 4;
+	                    	pthread_create( &threads[ threadNum ], NULL, threadInput, ( void* ) &data[ threadNum ] );
+	                    	pthread_join( threads[ threadNum ], NULL );
+	                    	signal( &S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ] );
+	                    	state.processState = 3;
+	                    	
+							strcpy( tempMessage, " - Process 1: end " );
+							strcat( tempMessage, tempMetaDataDescriptor );
+							strcat( tempMessage, " output" );
+
+							if( S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ].size > 1 )
+							{
+								strcat( tempMessage, " on " );
+								if( strcmp( tempMetaDataDescriptor, "hard drive" ) == 0 )
+									strcat( tempMessage, "HDD " );
+								else if( strcmp( tempMetaDataDescriptor, "printer" ) == 0 )
+									strcat( tempMessage, "PRNTR " );
+								else if( strcmp( tempMetaDataDescriptor, "keyboard" ) == 0 )
+									strcat( tempMessage, "KBD " );
+								else
+									strcat( tempMessage, "device " );
+
+								strcat( tempMessage, 
+									itoa( S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ].value - 1, 
+											tempToken, 10 ) );
+							}
+
+							strcat( tempMessage, "\n" );
+	                    	LogTime( logSpecification, data[ threadNum ].executionTime, logFile );
+							LogOutput( logSpecification, tempMessage, logFile);
+
+	                    	threadNum++;
+	                    }
+	                }
+	                else
+	                    tempErrorCode = 41;
+
+	                break;
+	            case 'M':
+	                if( tempNumberOfCycles > 0 )
+	                        tempProcessRunTime = tempNumberOfCycles *
+	                                    configFile.GetProcessValue( "memory" ) * 1000;
+	                else
+	                {
+	                    tempErrorCode = 51;
+	                	break;
+	                }
+
+	                if( strcmp( tempMetaDataDescriptor, "block" ) == 0 )
+	                {
+	                    if( state.processState == 3 )
+					    {
+					    	strcpy( tempMessage, " - Process 1: start memory bocking\n" );
+					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	
+					    	strcpy( tempMessage, " - Process 1: end memory blocking\n" );
+					    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	
+					    }
+	                }
+	                else if( strcmp( tempMetaDataDescriptor, "allocate" ) == 0 )
+	                {
+	               		if( state.processState == 3 )
+					    {
+					    	strcpy( tempMessage, " - Process 1: allocating memory\n" );
+					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	
+					    	strcpy( tempMessage, " - Process 1: memory allocated at " );
+					    	strcat( tempMessage, itoa( (int) allocateMemory( totalMemory, startMemory, memoryBlockSize ), tempToken, 16 ) );
+					    	strcat( tempMessage, "\n" );
+					    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
+					    	LogOutput( logSpecification, tempMessage, logFile);
+					    	
+					    }
+	                }
+	                else
+	                    tempErrorCode = 41;
+
+	                break;
+	            default:
+	                tempErrorCode = 31;
+
+	        }
+	    }
 
         if( state.processState == 5 )
 	    {
@@ -627,69 +655,80 @@ bool MetaDataInfo::ParseLine( char lineToParse[ ] )
         tempNumberOfCycles = -1;
         tempErrorCode = 0;
 
-        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
-        tempHelperPtr = strtok( tempHelperPtr, "(" );
-
-        tempMetaDataCode = ( tempHelperPtr[ 0 ] );
-        if( tempMetaDataCode == '\0' )
+        if( strncmp( lineToParse, "StartProgramMeta-Data", 21 ) == 0 
+        	|| strncmp( lineToParse, "EndProgramMeta-Data", 19 ) == 0 ) 
         {
-            tempErrorCode = 33;
-        }
-        else if( tempMetaDataCode > 'Z' || tempMetaDataCode < 'A' )
-        {
-            tempErrorCode = 32;
-        }
-
-        tempHelperPtr = strtok( NULL, ")" );
-        if( tempHelperPtr == NULL )
-        {
-            tempErrorCode = 42;
+        	tempHelperPtr = NULL;
         }
         else
         {
-            strcpy( tempMetaDataDescriptor, tempHelperPtr );
-        }
+	        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
+	        tempHelperPtr = strtok( tempHelperPtr, "(" );
 
-        tempHelperPtr = strtok( NULL, ":" );
-        if( tempHelperPtr == NULL )
-        {
-            tempErrorCode = 53;
-        }
-        else if( tempHelperPtr[ 0 ] > '9' || tempHelperPtr[ 0 ] < '0' )
-        {
-            tempErrorCode = 54;
-        }
-        else
-        {
-            tempNumberOfCycles = atoi( tempHelperPtr );
-        }
+	        tempMetaDataCode = ( tempHelperPtr[ 0 ] );
+	        if( tempMetaDataCode == '\0' )
+	        {
+	            tempErrorCode = 33;
+	        }
+	        else if( tempMetaDataCode > 'Z' || tempMetaDataCode < 'A' )
+	        {
+	            tempErrorCode = 32;
+	        }
 
-        if( tempNumberOfCycles < 0 )
-        {
-            tempErrorCode = 52;
-        }
-                
-        tempNode.aMetaDataCode = tempMetaDataCode;
-        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
-        tempNode.aNumberOfCycles = tempNumberOfCycles;
-        tempNode.aErrorCode = tempErrorCode;
+	        tempHelperPtr = strtok( NULL, ")" );
+	        if( tempHelperPtr == NULL )
+	        {
+	            tempErrorCode = 42;
+	        }
+	        else
+	        {
+	            strcpy( tempMetaDataDescriptor, tempHelperPtr );
+	        }
 
-        aQueueOfMetaData.push( tempNode );
-        
-        tempHelperPtr = tempHelperPtrAnchor;
-        strcpy( tempHelperPtr, tempHelper );
-        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
+	        tempHelperPtr = strtok( NULL, ":" );
+	        if( tempHelperPtr == NULL )
+	        {
+	            tempErrorCode = 53;
+	        }
+	        else if( tempHelperPtr[ 0 ] > '9' || tempHelperPtr[ 0 ] < '0' )
+	        {
+	            tempErrorCode = 54;
+	        }
+	        else
+	        {
+	            tempNumberOfCycles = atoi( tempHelperPtr );
+	        }
 
-        for( int i = 0; i < iterator; i++ )
-        {
-            tempHelperPtr = strtok( NULL, ",.:;\0" );
-        }
+	        if( tempNumberOfCycles == -1 )
+	        {
+	        	tempErrorCode = 52;
+	        }
+	        else if( tempNumberOfCycles < 0 )
+	        {
+	            tempErrorCode = 53;
+	        }
 
-        tempHelperPtr = strtok( NULL, "\0" );
+	        tempNode.aMetaDataCode = tempMetaDataCode;
+	        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
+	        tempNode.aNumberOfCycles = tempNumberOfCycles;
+	        tempNode.aErrorCode = tempErrorCode;
 
-        iterator++;
+	        aQueueOfMetaData.push( tempNode );
+	        
+	        tempHelperPtr = tempHelperPtrAnchor;
+	        strcpy( tempHelperPtr, tempHelper );
+	        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );
+
+	        for( int i = 0; i < iterator; i++ )
+	        {
+	            tempHelperPtr = strtok( NULL, ",.:;\0" );
+	        }
+
+	        tempHelperPtr = strtok( NULL, "\0" );
+
+	        iterator++;
+	    }
     }
-
     delete tempHelperPtrAnchor;
 
     tempHelperPtr = NULL;
@@ -790,7 +829,7 @@ void MetaDataInfo::ProcessErrorCode(    char logSpecification,
             strcpy( tempMessage, "Error in cycle value.\n" );
             break;
         case 52:
-            strcpy( tempMessage, "Error: Cycle value is negative.\n" );
+            strcpy( tempMessage, "Error: Cycle value is missing.\n" );
             break;
         case 53:
             strcpy( tempMessage, "Error: Cycle value is negative.\n" );
@@ -858,7 +897,6 @@ char* MetaDataInfo::itoa( int inputValue, char* outputString, int base )
     {
         outputString[ i++ ] = '0';
         outputString[ i ] = '\0';
-        return outputString;
     }
     else if( inputValue < 0 )
     {
@@ -928,53 +966,4 @@ void MetaDataInfo::LogTime( 	char logSpecification,
     {
         logFile << time;
     }
-}
-double MetaDataInfo::timer( long timeToWait, timeval& initTime )
-{
-	double time = 0;
-
-	timeval start, end;
-	gettimeofday( &start, NULL );
-
-	while ( getWaitTime( start ) < timeToWait )
-	{
-		;
-	}
-
-
-	gettimeofday( &end, NULL );
-
-	int sec, usec;
-
-	sec =  end.tv_sec - initTime.tv_sec;
-	usec = end.tv_usec - initTime.tv_usec; 
-
-	if( usec < 0 )
-	{
-		usec += 1000000;
-		sec -= 1;
-	}
-
-	time += (double) ( sec + (double)usec/1000000 );
-
-	return time;
-}
-
-long MetaDataInfo::getWaitTime( timeval& start )
-{
-	timeval current;
-	gettimeofday( &current, NULL );
-
-	int sec, usec;
-
-	sec =  current.tv_sec - start.tv_sec;
-	usec = current.tv_usec - start.tv_usec; 
-
-	if( usec < 0 )
-	{
-		usec += 1000000;
-		sec -= 1;
-	}
-
-	return (long)( sec*1000000 + (double)usec ); 
 }

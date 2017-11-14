@@ -50,6 +50,7 @@ struct ConfigFileInputNode
     {
         strcpy( aProcessName, copyNode.aProcessName );
         aProcessValue = copyNode.aProcessValue;
+        aQuantity = copyNode.aQuantity;
     }
     ~ConfigFileInputNode( )
     {
@@ -69,6 +70,7 @@ class ConfigFileInput
 
         int GetNumberOfProcesses( );
         int GetProcessValue( const char processName[ ] );
+        int GetProcessNumber( const char processName[ ] );
         char* GetProcessName( const int position );
         int GetProcessQuantity( const char processName[ ] );
         ConfigFileInputNode* GetProcess( const char processName[ ] );
@@ -76,6 +78,8 @@ class ConfigFileInput
         char GetLogOutputSpecification( );
         char* GetFilePath( );
         char* GetLogFilePath( );
+        int GetSystemMemory( );
+        int GetMemoryBlockSize( );
     protected:
         bool ParseLine( char lineToParse[ ] );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );
@@ -84,6 +88,8 @@ class ConfigFileInput
         char aFilePath[ FILE_NAME_MAX_LENGTH ];
         char aLogOutputSpecification;
         char aLogFilePath[ LOG_FILE_NAME_MAX_LENGTH ];
+        unsigned int  aMemoryBlockSize;
+        unsigned int  aSystemMemory;
         list<ConfigFileInputNode> aListOfProcesses;
 };
 

@@ -67,15 +67,41 @@ struct MetaDataInfoNode
 
 };
 
+struct mutex
+{
+	bool available;
+	void lock( )
+	{
+		available = false;
+	}
+	void release( )
+	{
+		available = true;
+	}
+};
+
+struct semaphore 
+{
+	int value;
+	int size;
+	mutex m;
+};
+
 struct thread_data
 {
     timeval initTime; 
     int tempProcessRunTime;
     double executionTime;
+    semaphore S;
 };
 
 void* threadInput( void* threadarg );
 void* threadOutput( void* threadarg );
+double timer( long timeToWait, timeval& initTime );
+long getWaitTime( timeval& start );
+void wait( semaphore *S );
+void signal( semaphore *S ); 
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Class Definition
@@ -103,10 +129,9 @@ class MetaDataInfo
                                     ofstream& logFile );      
         char* itoa( int inputValue, char* outputString, int base );
         void ReverseString( char* string, int size );
-        double timer( long timeToWait, timeval& time );
-        long getWaitTime( timeval& start );
     private:
         queue<MetaDataInfoNode> aQueueOfMetaData;
+        semaphore S;
 };
 
 #endif

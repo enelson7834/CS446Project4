@@ -4,18 +4,18 @@
 #include <time.h>
 #include <stdlib.h>
 
-unsigned int allocateMemory( int totMem )
-{
-	unsigned int address;
+int allocateMemory( unsigned int totMem, unsigned int& startMemory, unsigned int blockSize )
+{	
+	unsigned int start = startMemory;
 
-	srand( time( NULL ) );
-
-	if( totMem > 0 )
+	if( startMemory > totMem )
 	{
-		address = rand() % totMem;
+		startMemory = 0;
 	}
 
-	return address;
+	startMemory += blockSize;
+
+	return start;
 }
 
 #endif

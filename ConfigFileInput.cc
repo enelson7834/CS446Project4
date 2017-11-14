@@ -102,14 +102,14 @@ int ConfigFileInput::GetProcessValue( const char processName[ ] )
 char* ConfigFileInput::GetProcessName( const int position )
 {
     list<ConfigFileInputNode>::iterator it = aListOfProcesses.begin( );
-    for( int i = 1; i < position; i++ )
+    for( int i = 0; i < position; i++ )
     {
         ++it;
     }
     return it->aProcessName;
 } // end GetProcessName
 
-int GetProcessQuantity( const char processName[ ] )
+int ConfigFileInput::GetProcessQuantity( const char processName[ ] )
 {
     list<ConfigFileInputNode>::iterator it = aListOfProcesses.begin( );
     while( strcmp( processName, 
@@ -121,6 +121,19 @@ int GetProcessQuantity( const char processName[ ] )
     return it->aQuantity;
 }
 
+int ConfigFileInput::GetProcessNumber( const char processName[ ] )
+{
+    list<ConfigFileInputNode>::iterator it = aListOfProcesses.begin( );
+    int i = 0;
+    while( strcmp( processName, 
+            it->aProcessName ) != 0
+            && it != aListOfProcesses.end( ) )
+    {
+        ++it;
+        ++i;
+    }
+    return i;
+}
 
 ConfigFileInputNode* ConfigFileInput::GetProcess( const char processName[ ] )
 {
@@ -147,7 +160,17 @@ char* ConfigFileInput::GetFilePath( )
 char* ConfigFileInput::GetLogFilePath( )
 {
     return aLogFilePath;
-} // ennd GetLogFilePath
+} // end GetLogFilePath
+
+int ConfigFileInput::GetSystemMemory( )
+{
+	return aSystemMemory;
+}// end GetSystemMemory 
+
+int ConfigFileInput::GetMemoryBlockSize( )
+{
+	return aMemoryBlockSize;
+}//end GetMemoryBlockSize
 
 /**<
 Helper function that parses the lines in the config file and stores the 
@@ -205,7 +228,7 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
             return true;
         }
 
-        if( strstr( lineToParse, "Moniter" ) != NULL )
+        if( strstr( lineToParse, "Monitor" ) != NULL )
         {
             aLogOutputSpecification = 'M';
         }
@@ -276,11 +299,42 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
 
         return true;
     } // end getting the file path
-    else if( strncmp( lineToParse, "End Sim", 7 ) == 0 )
+    else if( strncmp( lineToParse, "Memory block size", 17 ) == 0
+    		 || strncmp( lineToParse, "System memory", 13 ) == 0 )
     {
+        char* tempValueToken;
+        int tempProcessValue;
+
+		tempValueToken = strpbrk( lineToParse, ":" );
+        RemoveSpaces( tempValueToken );
+        AdjustLineElements( tempValueToken , 0 );
+        tempProcessValue = atoi( tempValueToken );
+
+        if( strstr( lineToParse, "kbytes" ) != NULL )
+        {
+            tempProcessValue *= 1;
+        }
+        else if( strstr( lineToParse, "Mbytes" ) != NULL )
+        {
+            tempProcessValue *= 1000;
+        }
+        else if( strstr( lineToParse, "Gbytes" ) != NULL )
+        {
+            tempProcessValue *= 1000000;
+        }
+
+        if( strncmp( lineToParse, "System memory", 13 ) == 0 )
+        {
+        	aSystemMemory = tempProcessValue;
+        }
+        else if( strncmp( lineToParse, "Memory block size", 17 ) == 0 )
+        {
+        	aMemoryBlockSize = tempProcessValue;
+        }
+
         return true;
     }
-    else if( strstr( lineToParse, " qantity:" ) != NULL )
+    else if( strstr( lineToParse, " quantity:" ) != NULL )
     {
         char tempProcessName[ 30 ] = {'\0'};
         char* tempValueToken;
@@ -290,8 +344,8 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         AdjustLineElements( tempValueToken , 0 );
 
         strcpy( tempProcessName, lineToParse );
-        strstr( tempProcessName, " quantity:" )[0] = '\0';
-
+        strstr( tempProcessName, " quantity" )[ 0 ] = '\0';
+ 
         for( unsigned int i = 0; i < strlen( tempProcessName ); i++ )
         {
             tempProcessName[ i ] = tolower( tempProcessName[ i ] );
@@ -301,7 +355,10 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
 
         return true;
     }
-
+    else if( strncmp( lineToParse, "End Sim", 7 ) == 0 )
+    {
+        return true;
+    }
     // Retrieve the tokens from process specifications
     /////////////////////////////////////////////////////////////////////////
     else
@@ -345,22 +402,6 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         for( unsigned int i = 0; i < strlen( tempProcessName ); i++ )
         {
            tempProcessName[ i ] = tolower( tempProcessName[ i ] );
-        }
-
-        if( strncmp( lineToParse, "System Memory", 13 ) == 0 )
-        {
-            if( strstr( lineToParse, "kbytes" ) != NULL )
-            {
-                tempProcessValue *= 1000;
-            }
-            else if( strstr( lineToParse, "Mbytes" ) != NULL )
-            {
-                tempProcessValue *= 1000000;
-            }
-            else if( strstr( lineToParse, "Gbytes" ) != NULL )
-            {
-                tempProcessValue *= 1000000000;
-            }
         }
 
         strcpy( tempNode.aProcessName, tempProcessName );
