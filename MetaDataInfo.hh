@@ -95,6 +95,37 @@ struct thread_data
     semaphore S;
 };
 
+struct process
+{
+    int processNum = -1;
+    int priority = -1;
+    queue<MetaDataInfoNode> metaDataQueue;
+
+    process( )
+    {
+        ;
+    }
+
+    process( const process& p2 )
+    {
+        processNum = p2.processNum;
+        priority =  p2.priority;
+        metaDataQueue = p2.metaDataQueue;
+    }
+};
+
+struct processData
+{
+    int processNum = 0;
+    int taskNum = 0;
+    int inputOutputNum = 0;
+
+    process* tempProcess = NULL;
+};
+
+bool operator > ( const process& P1, const process& P2 );
+bool operator < ( const process& P1, const process& P2 );
+
 void* threadInput( void* threadarg );
 void* threadOutput( void* threadarg );
 double timer( long timeToWait, timeval& initTime );
@@ -109,13 +140,13 @@ void signal( semaphore *S );
 class MetaDataInfo
 {
     public:
-        MetaDataInfo( char* fileName );
+        MetaDataInfo( char* fileName, char* schedulingCode );
         ~MetaDataInfo( );
 
         void ProcessData(   ConfigFileInput& configFile,
                             PCB& state );
     protected:
-        bool ParseLine( char lineToParse[ ] );
+        bool ParseLine( char lineToParse[ ], processData& pD );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );
         void AdjustLineElements( char lineToAdjust[ ], int positionToAdjust );
         void ProcessErrorCode(  char logSpecification, 
@@ -130,7 +161,8 @@ class MetaDataInfo
         char* itoa( int inputValue, char* outputString, int base );
         void ReverseString( char* string, int size );
     private:
-        queue<MetaDataInfoNode> aQueueOfMetaData;
+        char aProcessSchedulingCode[ 10 ];
+        priority_queue<process> aPriorityQueueOfProcesses;
         semaphore S;
 };
 

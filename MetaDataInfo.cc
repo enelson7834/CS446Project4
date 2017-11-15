@@ -9,6 +9,16 @@
 #include "MetaDataInfo.hh"
 #include "MemoryFunction.hh"
 
+
+bool operator > ( const process &P1, const process &P2 )
+{
+    return P1.priority > P2.priority;
+}
+
+bool operator < ( const process &P1, const process &P2 )
+{
+    return P1.priority < P2.priority;
+}
 // Thread Functions
 /////////////////////////////////////////////////////////////////////////////
 void* threadInput( void* threadarg )
@@ -95,7 +105,7 @@ void signal( semaphore *S )
 /////////////////////////////////////////////////////////////////////////////
 // Constructors/Deconstructors
 /////////////////////////////////////////////////////////////////////////////
-MetaDataInfo::MetaDataInfo( char* fileName )
+MetaDataInfo::MetaDataInfo( char* fileName, char* schedulingCode )
 {
 	cout << fixed << showpoint;
 	cout << setprecision( 6 ); 
@@ -115,11 +125,14 @@ MetaDataInfo::MetaDataInfo( char* fileName )
         return;
     }
 
+    strcpy( aProcessSchedulingCode, schedulingCode );
+    processData tempData;
+
     bool fileStatus = 1;
     char tempLine[ 300 ] = {'\0'};
     fin.getline( tempLine, 300, '\n' );
     do {
-        if( !ParseLine( tempLine ) )
+        if( !ParseLine( tempLine, tempData ) )
         {
             fileStatus = 0;
         }
@@ -189,15 +202,6 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	*/
 	timeval initTime;
     gettimeofday( &initTime, NULL );
-
-    if( state.processState == 1 )
-    {
-    	strcpy( tempMessage, " - Simulator program starting\n" );
-    	LogTime( logSpecification, timer( 0, initTime ), logFile );
-    	LogOutput( logSpecification, tempMessage, logFile);
-    	state.processState++;
-    	
-    }
 
     queue<MetaDataInfoNode> tempStorageQueue;
     /*
@@ -280,8 +284,15 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 
     // Begin processing Meta Data
     /////////////////////////////////////////////////////////////////////////
+    if( state.processState == 1 )
+    {
+    	strcpy( tempMessage, " - Simulator program starting\n" );
+    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+    	LogOutput( logSpecification, tempMessage, logFile);
+    	state.processState++;
+    }
 
-    while( !aQueueOfMetaData.empty( ) )
+    while( !aPriorityQueueOfProcesses.empty( ) )
     {
         tempMetaDataCode = '\0';
         tempMetaDataDescriptor[ 0 ] = '\0';
@@ -291,11 +302,11 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 
         // Load Meta Data info into buffers
         /////////////////////////////////////////////////////////////////////
-        tempMetaDataCode = aQueueOfMetaData.front( ).aMetaDataCode;
+        tempMetaDataCode = aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aMetaDataCode;
         strcpy(	tempMetaDataDescriptor, 
-        		aQueueOfMetaData.front( ).aMetaDataDescriptor );
-        tempNumberOfCycles = aQueueOfMetaData.front( ).aNumberOfCycles;
-        tempErrorCode = aQueueOfMetaData.front( ).aErrorCode;
+        		aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aMetaDataDescriptor );
+        tempNumberOfCycles = aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aNumberOfCycles;
+        tempErrorCode = aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aErrorCode;
         if( tempErrorCode != 0 )
         	;
         else
@@ -309,30 +320,14 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                {
 	                    if( tempNumberOfCycles == 0 )
 	                    {
-						    // Move PCB to READY mode
-						    if( state.processState == 2 )
-						    {
-						    	strcpy( tempMessage, " - OS: perparing process 1\n" );		
-						    	LogTime( logSpecification, (double) timer( 0, initTime ) , logFile );
-						    	LogOutput( logSpecification, tempMessage, logFile);
-						    	state.processState++;
-					    	   	
-						    }
-							// Move PCB to RUNNING mode
-						    if( state.processState == 3 )
-						    {
-						    	strcpy( tempMessage, " - OS starting process 1\n" );
-						    	LogTime( logSpecification, timer( 0, initTime ), logFile );
-						    	LogOutput( logSpecification, tempMessage, logFile);
-						    }
-	                    }
+                    	    ;
+						}
 	                    else									
 	                        tempErrorCode = 51;
 	                }
 	                else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
 	                {
-	                    if( tempNumberOfCycles == 0 )
-	                        return;
+	                    ;
 	                }
 	                else
 	                    tempErrorCode = 41;
@@ -343,7 +338,27 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                {
 	                    if( tempNumberOfCycles == 0 )
 	                    {
-	                    	;
+	                    	// Move PCB to READY mode
+						    if( state.processState == 2 )
+						    {
+						    	strcpy( tempMessage, " - OS: preparing process " );
+						    	strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    	strcat( tempMessage, "\n" );
+		
+						    	LogTime( logSpecification, (double) timer( 0, initTime ) , logFile );
+						    	LogOutput( logSpecification, tempMessage, logFile);
+						    	state.processState++;
+						    }
+							// Move PCB to RUNNING mode
+						    if( state.processState == 3 )
+						    {
+						    	strcpy( tempMessage, " - OS: starting process " );
+						    	strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    	strcat( tempMessage, "\n" );
+
+						    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+						    	LogOutput( logSpecification, tempMessage, logFile);
+						    }
 	                    }
 	                    else
 	                        tempErrorCode = 51;
@@ -352,13 +367,17 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                {
 	                    if( tempNumberOfCycles == 0 )
 	                    {
-	              			// Move PCB to EXIT mode
+	              			// Move PCB to READY mode
 						    if( state.processState == 3 )
 						    {
-						    	strcpy( tempMessage, " - OS removing process 1\n" );
+						    	strcpy( tempMessage, " - End process " );
+						    	strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    	strcat( tempMessage, "\n" );
+
 						    	LogTime( logSpecification, timer( 0, initTime ), logFile );
 						    	LogOutput( logSpecification, tempMessage, logFile);
-						    	state.processState = 5;
+						    	aPriorityQueueOfProcesses.pop( );
+						    	state.processState--;
 						    }	
 	                    }
 	                    else
@@ -375,11 +394,17 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                                    configFile.GetProcessValue( "processor" ) * 1000;
 					    if( state.processState == 3 )
 					    {
-					    	strcpy( tempMessage, " - Process 1: start processing action\n" );
+					    	strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ":start processing action\n" );
+
 					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	
-					    	strcpy( tempMessage, " - Process 1: end processing action\n" );
+					    	strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ":end processing action\n" );
+
 					    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	
@@ -403,7 +428,9 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                    	data[ threadNum ].initTime = initTime;
 	                    	data[ threadNum ].tempProcessRunTime = tempProcessRunTime;
 							
-							strcpy( tempMessage, " - Process 1: start " );
+							strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": start" );
 							strcat( tempMessage, tempMetaDataDescriptor );
 							strcat( tempMessage, " input\n" );
 							LogTime( logSpecification, timer( 0, initTime ), logFile );
@@ -416,7 +443,9 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                    	signal( &S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ] );
 	                    	state.processState = 3;
 
-							strcpy( tempMessage, " - Process 1: end " );
+							strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": end" );
 							strcat( tempMessage, tempMetaDataDescriptor );
 							strcat( tempMessage, " input" );
 
@@ -467,8 +496,9 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 
 
 							
-							strcpy( tempMessage, " - Process 1: start " );
-							strcat( tempMessage, tempMetaDataDescriptor );
+							strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": start" );
 							strcat( tempMessage, " output\n" );
 							LogTime( logSpecification, timer( 0, initTime ), logFile );
 							LogOutput( logSpecification, tempMessage, logFile);
@@ -480,7 +510,9 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                    	signal( &S[ configFile.GetProcessNumber( tempMetaDataDescriptor ) ] );
 	                    	state.processState = 3;
 	                    	
-							strcpy( tempMessage, " - Process 1: end " );
+							strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": end" );
 							strcat( tempMessage, tempMetaDataDescriptor );
 							strcat( tempMessage, " output" );
 
@@ -526,11 +558,15 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                {
 	                    if( state.processState == 3 )
 					    {
-					    	strcpy( tempMessage, " - Process 1: start memory bocking\n" );
+					    	strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": start memory blocking" );
 					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	
-					    	strcpy( tempMessage, " - Process 1: end memory blocking\n" );
+					    	strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": end memory blocking" );
 					    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	
@@ -540,11 +576,15 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	                {
 	               		if( state.processState == 3 )
 					    {
-					    	strcpy( tempMessage, " - Process 1: allocating memory\n" );
+					    	strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": start allocating memory" );
 					    	LogTime( logSpecification, timer( 0, initTime ), logFile );
 					    	LogOutput( logSpecification, tempMessage, logFile);
 					    	
-					    	strcpy( tempMessage, " - Process 1: memory allocated at " );
+					    	strcpy( tempMessage, " - Process " );
+						    strcat( tempMessage, itoa( aPriorityQueueOfProcesses.top().processNum, tempToken, 10 ) );
+						    strcat( tempMessage, ": memory allocated at " );
 					    	strcat( tempMessage, itoa( (int) allocateMemory( totalMemory, startMemory, memoryBlockSize ), tempToken, 16 ) );
 					    	strcat( tempMessage, "\n" );
 					    	LogTime( logSpecification, timer( tempProcessRunTime, initTime ), logFile );
@@ -562,59 +602,35 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
 	        }
 	    }
 
-        if( state.processState == 5 )
-	    {
-	    	strcpy( tempMessage, " - Simulator program ending\n" );
-	    	LogTime( logSpecification, timer( 0, initTime ), logFile );
-	    	LogOutput( logSpecification, tempMessage, logFile);
-	    	state.processState = 5;
-	    }
-
         // Prepare the line for the Log output
         /////////////////////////////////////////////////////////////////////
-        if( tempErrorCode != 0 )
-        /*{
-            if( tempProcessRunTime > 0 )
-            {
-                itoa( tempProcessRunTime, tempToken, 10 );
-                itoa( tempNumberOfCycles, tempToken2, 10 );
-
-                tempMessage[ 0 ] = tempMetaDataCode;
-                tempMessage[ 1 ] = '\0';
-                strcat( tempMessage, "(" );
-                strcat( tempMessage, tempMetaDataDescriptor );
-                strcat( tempMessage, ")" );
-                strcat( tempMessage, tempToken2 );
-                strcat( tempMessage, " - " );
-                strcat( tempMessage, tempToken );
-                strcat( tempMessage, " ms\n" );
-
-                LogOutput( logSpecification, tempMessage, logFile );
-            }
-            else
-            {
-                ;
-            }
-        }
-        else*/
+        /*if( tempErrorCode != 0 )
         {
-            ProcessErrorCode( logSpecification, tempErrorCode, logFile );
-        }
+            
+            //ProcessErrorCode( logSpecification, tempErrorCode, logFile );
+        }*/
 
-        tempStorageQueue.push( ( aQueueOfMetaData.front( ) ) );
-        aQueueOfMetaData.pop( );
+        //tempStorageQueue.push( ( aPriorityQueueOfProcesses.top( ).metaDataQueue ) );
+        aPriorityQueueOfProcesses.top( ).metaDataQueue.pop( );
+    }
+	if( state.processState == 2 )
+    {
+    	strcpy( tempMessage, " - Simulator program ending\n" );
+    	LogTime( logSpecification, timer( 0, initTime ), logFile );
+    	LogOutput( logSpecification, tempMessage, logFile);
+    	state.processState = 5;
     }
 
 
     logFile.close( );
 
-    // Return queue to original state
+/*    // Return queue to original state
     /////////////////////////////////////////////////////////////////////////
     while( !tempStorageQueue.empty( ) )
     {
         aQueueOfMetaData.push( ( tempStorageQueue.front( ) ) );
         tempStorageQueue.pop( ); 
-    }
+    }*/
 } // End ParseData
 
 /**<
@@ -628,17 +644,22 @@ Parses the line from Meta Data and stores the tokens in nodes in the queue
 @note   Will also set error codes for any potentially troublesome processes
         so that they may be delt with later, without crashing the program.
 ****************************************************************************/
-bool MetaDataInfo::ParseLine( char lineToParse[ ] )
+bool MetaDataInfo::ParseLine( char lineToParse[ ], processData& pD )
 {
+	cout << lineToParse << endl;
     // Variable declarations/initialization
     /////////////////////////////////////////////////////////////////////////
     char tempHelper[ 300 ] = {'\0'};
+    
     char* tempHelperPtr = new char[ 300 ];
     char* tempHelperPtrAnchor = tempHelperPtr;
+    
     char tempMetaDataCode = '\0';
     char tempMetaDataDescriptor[ 30 ] = {'\0'};
+    
     int tempNumberOfCycles = -1;
     int tempErrorCode = 0;
+    
     MetaDataInfoNode tempNode;
 
     RemoveSpaces( lineToParse );
@@ -708,13 +729,69 @@ bool MetaDataInfo::ParseLine( char lineToParse[ ] )
 	            tempErrorCode = 53;
 	        }
 
-	        tempNode.aMetaDataCode = tempMetaDataCode;
-	        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
-	        tempNode.aNumberOfCycles = tempNumberOfCycles;
-	        tempNode.aErrorCode = tempErrorCode;
+	        if( tempMetaDataCode == 'A'  || tempMetaDataCode == 'S' )
+	        {
+	        	if( strcmp( tempMetaDataDescriptor, "start" ) == 0 )
+	        	{
+	        		if( pD.tempProcess == NULL )
+	        		{
+	        			pD.tempProcess = new process;
+		        		pD.processNum++;
+		        		pD.tempProcess->processNum = pD.processNum;
 
-	        aQueueOfMetaData.push( tempNode );
-	        
+		        		tempNode.aMetaDataCode = tempMetaDataCode;
+				        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
+				        tempNode.aNumberOfCycles = tempNumberOfCycles;
+				        tempNode.aErrorCode = tempErrorCode;
+
+		        		pD.tempProcess->metaDataQueue.push( tempNode );
+
+		        	}
+	        	}
+	        	else if( strcmp( tempMetaDataDescriptor, "end" ) == 0 )
+	        	{
+	        		if( strcmp( aProcessSchedulingCode, "FIFO" ) == 0 )
+	        		{
+	        			pD.tempProcess->priority = pD.processNum;
+	        		}
+	        		else if( strcmp( aProcessSchedulingCode, "SJF" ) == 0 )
+	        		{
+	        			pD.tempProcess->priority = pD.taskNum;
+	        		}
+	        		else if( strcmp( aProcessSchedulingCode, "PS" ) == 0 )
+	        		{
+	        			pD.tempProcess->priority = ( -1 * pD.inputOutputNum );
+	        		}
+
+					tempNode.aMetaDataCode = tempMetaDataCode;
+			        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
+			        tempNode.aNumberOfCycles = tempNumberOfCycles;
+			        tempNode.aErrorCode = tempErrorCode;
+
+			        pD.tempProcess->metaDataQueue.push( tempNode );
+
+	        		aPriorityQueueOfProcesses.push( *( pD.tempProcess ) );
+	        		delete pD.tempProcess;
+	        		pD.tempProcess = NULL;
+	        		pD.taskNum = 0;
+	        		pD.inputOutputNum = 0;
+	        	}
+	        } else
+	        {
+		    	if( tempMetaDataCode == 'I' || tempMetaDataCode == 'O' )
+		    	{
+		    		pD.inputOutputNum++;
+		    	}
+
+		    	pD.taskNum++;
+
+		        tempNode.aMetaDataCode = tempMetaDataCode;
+		        strcpy( tempNode.aMetaDataDescriptor, tempMetaDataDescriptor );
+		        tempNode.aNumberOfCycles = tempNumberOfCycles;
+		        tempNode.aErrorCode = tempErrorCode;
+
+		        pD.tempProcess->metaDataQueue.push( tempNode );
+		    }
 	        tempHelperPtr = tempHelperPtrAnchor;
 	        strcpy( tempHelperPtr, tempHelper );
 	        tempHelperPtr = strtok( tempHelperPtr, ".,:;\0" );

@@ -53,7 +53,6 @@ ConfigFileInput::ConfigFileInput(   char* fileName )
             fin.getline( tempLine, STR_MAX_LENGTH, '\n' );
         } while( !fin.eof( ) && fileStatus );
     }
-
     fin.close();
 } // end Default Constructor
 
@@ -150,24 +149,34 @@ ConfigFileInputNode* ConfigFileInput::GetProcess( const char processName[ ] )
 char ConfigFileInput::GetLogOutputSpecification( )
 {
     return aLogOutputSpecification;
-} // endGetLogOutputSpecification
+}// endGetLogOutputSpecification
 
 char* ConfigFileInput::GetFilePath( )
 {
     return aFilePath;
-} // end GetFilePath
+}// end GetFilePath
 
 char* ConfigFileInput::GetLogFilePath( )
 {
     return aLogFilePath;
-} // end GetLogFilePath
+}// end GetLogFilePath
 
-int ConfigFileInput::GetSystemMemory( )
+char* ConfigFileInput::GetCPUSchedulingCode( )
+{
+	return aCPUScheudlingCode;
+}// end GetCPUSchedulingCode
+
+int ConfigFileInput::GetProcessorQuantumNum( )
+{
+	return aProcessorQuantumNum;
+}// end GetProcessorQuantumNum
+
+unsigned int ConfigFileInput::GetSystemMemory( )
 {
 	return aSystemMemory;
 }// end GetSystemMemory 
 
-int ConfigFileInput::GetMemoryBlockSize( )
+unsigned int ConfigFileInput::GetMemoryBlockSize( )
 {
 	return aMemoryBlockSize;
 }//end GetMemoryBlockSize
@@ -215,6 +224,29 @@ bool ConfigFileInput::ParseLine( char lineToParse[ ] )
         }
 
         strcpy( aFilePath, tempFileName ); 
+
+        return true;
+    }
+    else if( strncmp( lineToParse, "Processor Quantum", 17 ) == 0 )
+    {
+    	char* tempValueToken;
+
+		tempValueToken = strpbrk( lineToParse, ":" );
+        RemoveSpaces( tempValueToken );
+        AdjustLineElements( tempValueToken , 0 );
+        aProcessorQuantumNum = atoi( tempValueToken );
+
+        return true; 
+    }
+    else if( strncmp( lineToParse, "CPU Scheduling Code", 19 ) == 0)
+    {
+    	char* tempValueToken;
+
+		tempValueToken = strpbrk( lineToParse, ":" );
+        RemoveSpaces( tempValueToken );
+        AdjustLineElements( tempValueToken , 0 );
+
+        strcpy( aCPUScheudlingCode, tempValueToken );
 
         return true;
     }

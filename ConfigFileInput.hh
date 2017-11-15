@@ -68,18 +68,20 @@ class ConfigFileInput
         ConfigFileInput( const ConfigFileInput& copyInput );
         ~ConfigFileInput( );
 
-        int GetNumberOfProcesses( );
-        int GetProcessValue( const char processName[ ] );
-        int GetProcessNumber( const char processName[ ] );
-        char* GetProcessName( const int position );
-        int GetProcessQuantity( const char processName[ ] );
+        int     GetNumberOfProcesses( );
+        int     GetProcessValue( const char processName[ ] );
+        int     GetProcessNumber( const char processName[ ] );
+        char*   GetProcessName( const int position );
+        int     GetProcessQuantity( const char processName[ ] );
         ConfigFileInputNode* GetProcess( const char processName[ ] );
 
-        char GetLogOutputSpecification( );
-        char* GetFilePath( );
-        char* GetLogFilePath( );
-        int GetSystemMemory( );
-        int GetMemoryBlockSize( );
+        char    GetLogOutputSpecification( );
+        char*   GetFilePath( );
+        char*   GetLogFilePath( );
+        char*   GetCPUSchedulingCode( );
+        int     GetProcessorQuantumNum( );
+        unsigned int GetSystemMemory( );
+        unsigned int GetMemoryBlockSize( );
     protected:
         bool ParseLine( char lineToParse[ ] );
         void RemoveSpaces( char lineToRemoveSpaces[ ] );
@@ -88,8 +90,12 @@ class ConfigFileInput
         char aFilePath[ FILE_NAME_MAX_LENGTH ];
         char aLogOutputSpecification;
         char aLogFilePath[ LOG_FILE_NAME_MAX_LENGTH ];
-        unsigned int  aMemoryBlockSize;
-        unsigned int  aSystemMemory;
+        char aCPUScheudlingCode[ 5 ];
+
+        int aProcessorQuantumNum;       
+
+        unsigned int aMemoryBlockSize;
+        unsigned int aSystemMemory;
         list<ConfigFileInputNode> aListOfProcesses;
 };
 

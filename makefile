@@ -1,6 +1,6 @@
 OBJS = MetaDataInfo.o ConfigFileInput.o main.o
 FILESET = ConfigFileInput.hh ConfigFileInput.cc MetaDataInfo.hh MetaDataInfo.cc main.cpp
-CC = g++
+CC = g++ -std=c++11
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
