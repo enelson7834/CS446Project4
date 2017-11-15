@@ -162,7 +162,7 @@ class MetaDataInfo
         void ReverseString( char* string, int size );
     private:
         char aProcessSchedulingCode[ 10 ];
-        priority_queue<process> aPriorityQueueOfProcesses;
+        priority_queue<process, vector<process>, greater<process> > aPriorityQueueOfProcesses;
         semaphore S;
 };
 

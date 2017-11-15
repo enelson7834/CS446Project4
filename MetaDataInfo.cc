@@ -307,6 +307,8 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
         		aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aMetaDataDescriptor );
         tempNumberOfCycles = aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aNumberOfCycles;
         tempErrorCode = aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aErrorCode;
+
+        cout << aPriorityQueueOfProcesses.top( ).metaDataQueue.front( ).aMetaDataCode << endl;
         if( tempErrorCode != 0 )
         	;
         else
@@ -611,7 +613,12 @@ void MetaDataInfo::ProcessData( ConfigFileInput& configFile,
         }*/
 
         //tempStorageQueue.push( ( aPriorityQueueOfProcesses.top( ).metaDataQueue ) );
-        aPriorityQueueOfProcesses.top( ).metaDataQueue.pop( );
+        cout << " here " << endl;
+        process tempProcess = aPriorityQueueOfProcesses.top( );
+        aPriorityQueueOfProcesses.pop( );
+
+        tempProcess.metaDataQueue.pop( );
+        aPriorityQueueOfProcesses.push( tempProcess );
     }
 	if( state.processState == 2 )
     {
