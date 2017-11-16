@@ -12,7 +12,7 @@ int main( int argv, char* argc[ ] )
 	state.processState = 1;
 
     ConfigFileInput ConfigFileTest( argc[ 1 ] );
-    cout << "here1" << endl;
+
     MetaDataInfo MetaDataFileTest( 	ConfigFileTest.GetFilePath( ), ConfigFileTest.GetCPUSchedulingCode( ) );
 
     MetaDataFileTest.ProcessData( ConfigFileTest, state );

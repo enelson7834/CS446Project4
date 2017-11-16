@@ -5,7 +5,7 @@ DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 
-Sim03: $(OBJS)
+Sim04: $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS) -o Sim03 -lpthread
 ConfigFileInput.o: ConfigFileInput.hh ConfigFileInput.cc
 	$(CC) $(CFLAGS) ConfigFileInput.cc
@@ -13,7 +13,7 @@ MetaDataInfo.o: MetaDataInfo.hh MetaDataInfo.cc ConfigFileInput.hh PCB.hh Memory
 	$(CC) $(CFLAGS) MetaDataInfo.cc
 main.o:	main.cpp ConfigFileInput.hh  MetaDataInfo.hh PCB.hh
 	$(CC) $(CFLAGS) main.cpp
-Sim03_NelsonEugene.tar.gz: $(FILESET) MemoryFunction.hh PCB.hh makefile refman.pdf
+Sim04_NelsonEugene.tar.gz: $(FILESET) MemoryFunction.hh PCB.hh makefile refman.pdf
 	tar -cvzf $@ $^
 clean:
-	rm *.o Sim03
+	rm *.o Sim04
